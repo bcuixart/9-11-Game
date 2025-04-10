@@ -1,0 +1,19 @@
+#include "GameManager.hh"
+
+GameManager::GameManager(Renderer* _renderer, GLFWwindow* _window)
+{
+	renderer = _renderer;
+	window = _window;
+}
+
+void GameManager::GetInput() 
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		cout << "Wow, you pressed a key, so proud." << endl;
+	}
+}
+
+void GameManager::Update() 
+{
+	GetInput();
+}
