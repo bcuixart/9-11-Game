@@ -16,6 +16,6 @@ void main()  {
     if (vertex.y >= 25 && vertex.y <= 35) {
         gl_Position = PM * VM * TG * vec4 (vertex + bend, 1.0);
     } else {
-        gl_Position = PM * VM * TG * vec4 (vertex, 1.0);
+        gl_Position = TG * vec4 (vertex, 1.0);
     }
 }

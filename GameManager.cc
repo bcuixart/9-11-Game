@@ -13,7 +13,25 @@ void GameManager::GetInput()
 	}
 }
 
+void GameManager::Start() 
+{
+	for (int i = 0; i < initialGameObjects.size(); ++i) 
+	{
+		InstantiateGameObject(&initialGameObjects[i]);
+	}
+}
+
+void GameManager::InstantiateGameObject(GameObject* gameObject) 
+{
+	currentGameObjects.push_back(*gameObject);
+	renderer->InitializeObjectModelVAO(gameObject);
+}
+
 void GameManager::Update() 
 {
 	GetInput();
+
+	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
+		renderer->RenderObject(&(*it));
+	}
 }

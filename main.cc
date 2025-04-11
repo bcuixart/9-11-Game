@@ -48,17 +48,18 @@ int main()
 	}
 
 	GameManager* gameManager = new GameManager(renderer, window);
+	gameManager->Start();
 
 	glClearColor(0.5, 0.7, 1.0, 1.0);
 	while (!glfwWindowShouldClose(window)) {
 		// Input
 		glfwPollEvents();
 
-		// Update
-		gameManager->Update();
-
 		// Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// Update
+		gameManager->Update();
 
 		// Draw
 

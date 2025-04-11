@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,6 +16,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "GameObject.hh"
+#include "Model.hh"
+
 using namespace std;
 
 class Renderer {
@@ -24,6 +28,11 @@ public:
 	bool initializeRenderer();
 	void deleteRenderer();
 
+	void InitializeObjectModelVAO(GameObject* gameObject);
+	void RenderObject(GameObject* gameObject);
+
+	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+
 private:
 	bool loadShader(const string& shaderToLoad, GLuint& shader);
 
@@ -32,6 +41,15 @@ private:
 	GLuint vertexShader;
 	GLuint fragmentShader;
 	GLuint shaderProgram;
+
+	GLuint vertexLoc;
+	GLuint colorLoc;
+	GLuint projLoc;
+	GLuint viewLoc;
+	GLuint TGLoc;
+
+	// GLuint, int = VAO, modelFaces
+	map<string, pair<GLuint, int>> modelVAOs;
 };
 
 #endif
