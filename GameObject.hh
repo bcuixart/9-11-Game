@@ -8,9 +8,12 @@
 
 using namespace std;
 
+class GameManager;
+
 class GameObject {
 public:
 	GameObject(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
+	virtual ~GameObject() = default;
 
 	string ModelName() const;
 

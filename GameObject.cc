@@ -1,4 +1,5 @@
 #include "GameObject.hh"
+#include "GameManager.hh"
 
 void GameObject::Update() 
 {
