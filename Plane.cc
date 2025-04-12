@@ -1,12 +1,17 @@
 #include "Plane.hh"
 
-void Plane::Update()
+Plane::Plane(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
+    : GameObject(_mod, _pos, _rot, _scl) 
 {
-	std::cout << "Hola soc un avio" << std::endl;
 }
 
-Plane::Plane(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
-    : GameObject(_mod, _pos, _rot, _scl)  // Call to base class constructor
+void Plane::Update()
 {
-    // Additional initialization for Plane, if needed
+    float rotacioRadians = glm::radians(rotation.y);
+
+    position = position + glm::vec3(
+        cos(rotacioRadians),
+        0,
+        sin(rotacioRadians)
+    ) * PLANE_SPEED;
 }

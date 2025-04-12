@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_HH
 #define GAMEOBJECT_HH
 
+#include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <string>
 #include <iostream>

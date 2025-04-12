@@ -18,6 +18,8 @@ public:
 protected:
 
 private:
+
+	const float PLANE_SPEED = 0.005;
 };
 
 #endif
