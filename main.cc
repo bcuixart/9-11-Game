@@ -27,6 +27,8 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
+	glViewport(0, 0, WIDTH, HEIGHT);
+
 	// Init GLEW
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
@@ -43,7 +45,7 @@ int main()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	Renderer* renderer = new Renderer();
-	if (!renderer->initializeRenderer()) {
+	if (!renderer->InitializeRenderer()) {
 		glfwTerminate();
 	}
 
@@ -55,14 +57,8 @@ int main()
 		// Input
 		glfwPollEvents();
 
-		// Clear
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
 		// Update
 		gameManager->Update();
-
-		// Draw
-
 
 		// End drawing
 		glfwSwapBuffers(window);
@@ -70,7 +66,7 @@ int main()
 	}
 
 	glfwDestroyWindow(window);
-	renderer->deleteRenderer();
+	renderer->DeleteRenderer();
 	glfwTerminate();
 
 }

@@ -25,16 +25,20 @@ class Renderer {
 public:
 	Renderer();
 
-	bool initializeRenderer();
-	void deleteRenderer();
+	bool InitializeRenderer();
+	void DeleteRenderer();
 
 	void InitializeObjectModelVAO(GameObject* gameObject);
 	void RenderObject(GameObject* gameObject);
 
 	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 
+	void ClearRenderer();
+
+	void CameraViewMatrix(const glm::mat4 VM, const glm::mat4 PM);
+
 private:
-	bool loadShader(const string& shaderToLoad, GLuint& shader);
+	bool LoadShader(const string& shaderToLoad, GLuint& shader);
 
 	const string SHADER_TO_LOAD = "./Assets/Shaders/basicShader";
 	

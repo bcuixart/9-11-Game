@@ -5,6 +5,7 @@
 
 #include "Renderer.hh"
 #include "GameObject.hh"
+#include "Camera.hh"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ public:
 
 private:
 	Renderer* renderer;
+	Camera* camera;
 	GLFWwindow* window;
 
 	void GetInput();
@@ -26,7 +28,8 @@ private:
 	list<GameObject> currentGameObjects;
 
 	std::vector<GameObject> initialGameObjects = {
-		GameObject("./Assets/Models/Debug_Point.obj", glm::vec3(.1,0,-.5), glm::vec3(0), glm::vec3(1))
+		GameObject("./Assets/Models/Tower_N.obj", glm::vec3(6.4,0,0), glm::vec3(0), glm::vec3(1)),
+		GameObject("./Assets/Models/Tower_S.obj", glm::vec3(-6.4,0,0), glm::vec3(0), glm::vec3(1))
 	};
 };
 

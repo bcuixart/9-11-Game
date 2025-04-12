@@ -4,9 +4,9 @@ Renderer::Renderer()
 {
 }
 
-bool Renderer::initializeRenderer() 
+bool Renderer::InitializeRenderer() 
 {
-	bool lS = loadShader(SHADER_TO_LOAD, shaderProgram);
+	bool lS = LoadShader(SHADER_TO_LOAD, shaderProgram);
 
 	projLoc = glGetUniformLocation(shaderProgram, "PM");
 	viewLoc = glGetUniformLocation(shaderProgram, "VM");
@@ -54,14 +54,11 @@ void Renderer::RenderObject(GameObject* gameObject)
 	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
 	GLuint VAO = modelVAOs[modelName].first;
 
-	cout << modelVAOs[modelName].second << endl;
 	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale());
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, modelVAOs[modelName].second * 3);
 
 	glBindVertexArray(0);
-
-	glUseProgram(0);
 }
 
 void Renderer::TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) 
@@ -75,12 +72,23 @@ void Renderer::TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3
 	glUniformMatrix4fv(TGLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
-void Renderer::deleteRenderer() 
+void Renderer::CameraViewMatrix(const glm::mat4 VM, const glm::mat4 PM) 
+{
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &VM[0][0]);
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &PM[0][0]);
+}
+
+void Renderer::DeleteRenderer() 
 {
 	glDeleteProgram(shaderProgram);
 }
 
-bool Renderer::loadShader(const string& shaderToLoad, GLuint &shader)
+void Renderer::ClearRenderer() 
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
 {
 	char infoLog[512];
 	GLint success;
@@ -154,7 +162,6 @@ bool Renderer::loadShader(const string& shaderToLoad, GLuint &shader)
 		return false;
 	}
 
-	glUseProgram(0);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 

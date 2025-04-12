@@ -15,6 +15,8 @@ void GameManager::GetInput()
 
 void GameManager::Start() 
 {
+	camera = new Camera(glm::vec3(0,30,50), glm::vec3(0,0,0), 45, 1, 0.1, 100);
+
 	for (int i = 0; i < initialGameObjects.size(); ++i) 
 	{
 		InstantiateGameObject(&initialGameObjects[i]);
@@ -31,7 +33,11 @@ void GameManager::Update()
 {
 	GetInput();
 
+	renderer->ClearRenderer();
+	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
+
 	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
 		renderer->RenderObject(&(*it));
 	}
+
 }
