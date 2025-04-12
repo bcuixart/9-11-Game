@@ -17,5 +17,11 @@ void Plane::Update()
     ) * PLANE_SPEED;
 
 
-    cout << GameManager::instance->GetInput(GLFW_KEY_ESCAPE);
+    if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS) {
+        rotation.y -= PLANE_TURN_SPEED;
+    }
+
+    if (GameManager::instance->GetInput(GLFW_KEY_A) == GLFW_PRESS) {
+        rotation.y += PLANE_TURN_SPEED;
+    }
 }
