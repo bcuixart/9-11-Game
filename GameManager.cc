@@ -10,12 +10,19 @@ GameManager::GameManager(Renderer* _renderer, GLFWwindow* _window)
 	GameManager::instance = this;
 }
 
+int GameManager::GetInput(int key) 
+{
+	return glfwGetKey(window, key);
+}
+
+/*
 void GameManager::GetInput() 
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		cout << "Wow, you pressed a key, so proud." << endl;
 	}
 }
+*/
 
 void GameManager::Start() 
 {
@@ -35,8 +42,6 @@ void GameManager::InstantiateGameObject(GameObject* gameObject)
 
 void GameManager::Update() 
 {
-	GetInput();
-
 	renderer->ClearRenderer();
 	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
 

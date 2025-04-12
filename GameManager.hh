@@ -20,14 +20,14 @@ public:
 	void Start();
 	void Update();
 
+	int GetInput(int key);
+
 	void InstantiateGameObject(GameObject* gameObject);
 
 private:
 	Renderer* renderer;
 	Camera* camera;
 	GLFWwindow* window;
-
-	void GetInput();
 
 	list<GameObject*> currentGameObjects;
 
