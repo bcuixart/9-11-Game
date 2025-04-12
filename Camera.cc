@@ -35,9 +35,9 @@ glm::mat4 Camera::GetCameraViewMatrix()
 
     glm::mat4 view = glm::mat4(1.0f);
 
-    view = glm::rotate(view, -cameraRotation.x, glm::vec3(1, 0, 0));
-    view = glm::rotate(view, -cameraRotation.y, glm::vec3(0, 1, 0));
-    view = glm::rotate(view, -cameraRotation.z, glm::vec3(0, 0, 1));
+    view = glm::rotate(view, -rotation.x, glm::vec3(1, 0, 0));
+    view = glm::rotate(view, -rotation.y, glm::vec3(0, 1, 0));
+    view = glm::rotate(view, -rotation.z, glm::vec3(0, 0, 1));
 
     view = glm::translate(view, -cameraPosition);
 

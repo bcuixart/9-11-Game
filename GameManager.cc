@@ -53,4 +53,6 @@ void GameManager::Update()
 		renderer->RenderObject(*it);
 	}
 
+	camera->MoveCamera(planeGameObject->Position());
+	camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0,-90,0));
 }
