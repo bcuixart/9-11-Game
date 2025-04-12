@@ -1,5 +1,5 @@
-#ifndef RENDERER
-#define RENDERER
+#ifndef RENDERER_HH
+#define RENDERER_HH
 
 #include <iostream>
 #include <fstream>

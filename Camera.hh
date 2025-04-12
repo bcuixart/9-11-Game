@@ -1,5 +1,5 @@
-#ifndef CAMERA
-#define CAMERA
+#ifndef CAMERA_HH
+#define CAMERA_HH
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>

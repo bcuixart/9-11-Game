@@ -23,7 +23,7 @@ void GameManager::Start()
 
 	for (int i = 0; i < initialGameObjects.size(); ++i) 
 	{
-		InstantiateGameObject(&initialGameObjects[i]);
+		InstantiateGameObject(initialGameObjects[i]);
 	}
 }
 

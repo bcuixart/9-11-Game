@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT
-#define GAMEOBJECT
+#ifndef GAMEOBJECT_HH
+#define GAMEOBJECT_HH
 
 #include <glm/vec3.hpp>
 #include <string>
@@ -19,13 +19,14 @@ public:
 
 	virtual void Update();
 
-private:
-
-	string modelName;
-
+protected:
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;
+
+private:
+
+	string modelName;
 };
 
 #endif
