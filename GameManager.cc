@@ -1,9 +1,13 @@
 #include "GameManager.hh"
 
+GameManager* GameManager::instance = nullptr;
+
 GameManager::GameManager(Renderer* _renderer, GLFWwindow* _window)
 {
 	renderer = _renderer;
 	window = _window;
+
+	GameManager::instance = this;
 }
 
 void GameManager::GetInput() 
@@ -25,7 +29,7 @@ void GameManager::Start()
 
 void GameManager::InstantiateGameObject(GameObject* gameObject) 
 {
-	currentGameObjects.push_back(*gameObject);
+	currentGameObjects.push_back(gameObject);
 	renderer->InitializeObjectModelVAO(gameObject);
 }
 
@@ -37,7 +41,11 @@ void GameManager::Update()
 	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
 
 	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
-		renderer->RenderObject(&(*it));
+		(*it)->Update();
+	}
+
+	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
+		renderer->RenderObject(*it);
 	}
 
 }

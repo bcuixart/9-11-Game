@@ -13,6 +13,8 @@ class GameManager {
 public:
 	GameManager(Renderer* _renderer, GLFWwindow* _window);
 
+	static GameManager* instance;
+
 	void Start();
 	void Update();
 
@@ -25,7 +27,7 @@ private:
 
 	void GetInput();
 
-	list<GameObject> currentGameObjects;
+	list<GameObject*> currentGameObjects;
 
 	std::vector<GameObject> initialGameObjects = {
 		GameObject("./Assets/Models/Tower_N.obj", glm::vec3(6.4,0,0), glm::vec3(0), glm::vec3(1)),

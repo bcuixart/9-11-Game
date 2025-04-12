@@ -1,5 +1,10 @@
 #include "GameObject.hh"
 
+void GameObject::Update() 
+{
+	std::cout << "Hola" << std::endl;
+}
+
 string GameObject::ModelName() const 
 {
 	return modelName;

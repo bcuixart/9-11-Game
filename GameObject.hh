@@ -3,6 +3,7 @@
 
 #include <glm/vec3.hpp>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ public:
 	glm::vec3 Position() const;
 	glm::vec3 Rotation() const;
 	glm::vec3 Scale() const;
+
+	virtual void Update();
 
 private:
 
