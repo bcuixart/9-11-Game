@@ -12,6 +12,6 @@ void Plane::Update()
     position = position + glm::vec3(
         cos(rotacioRadians),
         0,
-        sin(rotacioRadians)
+        -sin(rotacioRadians)
     ) * PLANE_SPEED;
 }

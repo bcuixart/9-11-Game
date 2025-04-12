@@ -31,7 +31,7 @@ private:
 
 	list<GameObject*> currentGameObjects;
 
-	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, 0), glm::vec3(0), glm::vec3(1));
+	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, 20), glm::vec3(0, 90, 0), glm::vec3(1));
 
 	vector<GameObject*> initialGameObjects = {
 		new GameObject("./Assets/Models/Tower_N.obj", glm::vec3(6.4,0,0), glm::vec3(0), glm::vec3(1)),
