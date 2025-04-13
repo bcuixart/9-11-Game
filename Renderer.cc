@@ -1,5 +1,8 @@
 #include "Renderer.hh"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 Renderer::Renderer()
 {
 }
@@ -8,11 +11,18 @@ bool Renderer::InitializeRenderer()
 {
 	bool lS = LoadShader(SHADER_TO_LOAD, shaderProgram);
 
+	glUseProgram(shaderProgram);
+
 	projLoc = glGetUniformLocation(shaderProgram, "PM");
 	viewLoc = glGetUniformLocation(shaderProgram, "VM");
+	uvLoc = glGetUniformLocation(shaderProgram, "uv");
 	vertexLoc = glGetAttribLocation(shaderProgram, "vertex");
 	colorLoc = glGetAttribLocation(shaderProgram, "color");
 	TGLoc = glGetUniformLocation(shaderProgram, "TG");
+	textureLoc = glGetUniformLocation(shaderProgram, "textureSampler");
+	glUniform1i(textureLoc, 0);
+
+	LoadTextureFromFile("./Assets/Textures/Texture_Tower.jpg");
 
 	return lS;
 }
@@ -29,8 +39,8 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 	glBindVertexArray(modelVAOs[modelName].first);
 	modelVAOs[modelName].second = model.faces().size();
 
-	GLuint VBOs[2];
-	glGenBuffers(2, VBOs);
+	GLuint VBOs[3];
+	glGenBuffers(3, VBOs);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * model.faces().size() * 3 * 3, model.VBO_vertices(), GL_STATIC_DRAW);
@@ -42,8 +52,119 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(colorLoc);
 
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * model.faces().size() * 3 * 2, model.VBO_uvs(), GL_STATIC_DRAW);
+	glVertexAttribPointer(uvLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(uvLoc);
+
 	glBindVertexArray(0);
 }
+
+void Renderer::LoadTextureFromFile(const string& filename)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);  // Genera un ID per la textura
+
+	glActiveTexture(GL_TEXTURE0);  // Activa la unitat de textura 0
+	glBindTexture(GL_TEXTURE_2D, textureID);  // Bind la textura
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+	if (!data) {
+		cout << "Error carregant textura '" << filename << "': " << stbi_failure_reason() << endl;
+		return;
+	}
+	if (data == nullptr) {
+		cout << "Failed to load texture image: " << filename << endl;
+		return;
+	}
+	if (textureID == 0) {
+		cout << "Failed to generate texture ID" << endl;
+		return;
+	}
+	cout << "Carregada: " << filename << " (" << width << "x" << height << ", " << nrChannels << " canals)" << endl;
+
+	GLenum internalFormat = 0, dataFormat = 0;
+	if (nrChannels == 4) {
+		internalFormat = GL_RGBA8;
+		dataFormat = GL_RGBA;
+	}
+	else if (nrChannels == 3) {
+		internalFormat = GL_RGB8;
+		dataFormat = GL_RGB;
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data);
+}
+
+/*
+GLuint Renderer::LoadTextureFromFile(const string& filename) {
+	glUseProgram(shaderProgram);
+
+	if (!glIsProgram(shaderProgram)) {
+		cout << "shaderProgram NO és un shader vàlid!" << endl;
+	}
+
+	if (!glfwGetCurrentContext()) {
+		cout << "ERROR: No OpenGL context current!" << endl;
+	}
+
+	cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
+
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR) {
+		cout << "OpenGL error abans de crear textura: " << err << endl;
+	}
+
+	cout << "Hey";
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	if (textureID == 0) {
+		cout << "glGenTextures ha retornat 0!" << endl;
+		return 0;
+	}
+
+	int width, height, nrChannels;
+	cout << "Hey";
+	stbi_set_flip_vertically_on_load(true);
+	cout << "Hey";
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
+	if (!data) {
+		cout << "Error carregant textura '" << filename << "': " << stbi_failure_reason() << endl;
+		return 0;
+	}
+	cout << "Carregada: " << filename << " (" << width << "x" << height << ", " << nrChannels << " canals)" << endl;
+	cout << "Hey";
+	GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	err = glGetError();
+	if (err != GL_NO_ERROR) {
+		cout << "OpenGL error després de glTexImage2D: " << err << endl;
+	}
+	/*
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+	return textureID;
+}
+*/
 
 void Renderer::RenderObject(GameObject* gameObject) 
 {
@@ -52,6 +173,10 @@ void Renderer::RenderObject(GameObject* gameObject)
 	string modelName = gameObject->ModelName();
 	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
 	GLuint VAO = modelVAOs[modelName].first;
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureLoc);
+	glUniform1i(glGetUniformLocation(shaderProgram, "textureSampler"), 0);
 
 	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale());
 	glBindVertexArray(VAO);

@@ -29,6 +29,7 @@ public:
 	void DeleteRenderer();
 
 	void InitializeObjectModelVAO(GameObject* gameObject);
+	void LoadTextureFromFile(const string& filename);
 	void RenderObject(GameObject* gameObject);
 
 	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
@@ -48,9 +49,12 @@ private:
 
 	GLuint vertexLoc;
 	GLuint colorLoc;
+	GLuint uvLoc;
 	GLuint projLoc;
 	GLuint viewLoc;
 	GLuint TGLoc;
+
+	GLuint textureLoc;
 
 	// GLuint, int = VAO, modelFaces
 	map<string, pair<GLuint, int>> modelVAOs;
