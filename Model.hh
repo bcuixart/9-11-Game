@@ -32,10 +32,12 @@ std::vector<Material> Materials
 
 typedef double Vertex;
 typedef double Normal;
+typedef double UV;
 
 struct Face{
   std::vector<int> v;   // Model::load() only generates triangles, though.
   std::vector<int> n;
+  std::vector<int> t;   // UV indices
   int mat;
   double normalC[3];
 };
@@ -63,6 +65,9 @@ class Model {
   float *VBO_normals () {
     return _VBO_normals;
   }
+  float* VBO_uvs() {
+      return _VBO_uvs;
+  }
   float *VBO_matamb () {
     return _VBO_matamb;
   }
@@ -80,8 +85,9 @@ class Model {
   std::vector<Vertex> _vertices;
   std::vector<Normal> _normals;
   std::vector<Face> _faces;
+  std::vector<UV> _uvs;
 
-  float *_VBO_vertices, *_VBO_normals;
+  float *_VBO_vertices, *_VBO_normals, *_VBO_uvs;
   float *_VBO_matamb, *_VBO_matdiff, *_VBO_matspec, *_VBO_matshin;
 
   void parseVOnly(std::stringstream & ss, std::string & block);

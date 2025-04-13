@@ -23,7 +23,8 @@ static void omplenormals(vector<Face> &_faces,
 static void ompleVBOs(vector<Face> &_faces, 
 	              vector<Vertex> const &_vertices,
 	              vector<Normal> const &_normals,
-		      float *&_VBO_vert, float *&_VBO_norm,
+	              vector<UV> const &_texcoords,
+		      float *&_VBO_vert, float *&_VBO_norm, float *&_VBO_uv,
 		      float *&_VBO_mata, float *&_VBO_matd, float *&_VBO_matsp, float *&_VBO_matsh);
 
 static bool fvtn = false;
@@ -33,12 +34,13 @@ static string modelPath("");
 
 // ======== Constructors and Destructors =======
 Model::Model() : _vertices(0), _normals(0), _faces(0) {
-  _VBO_vertices = _VBO_normals = _VBO_matamb = _VBO_matdiff = _VBO_matspec = _VBO_matshin = NULL;
+  _VBO_vertices = _VBO_normals = _VBO_uvs = _VBO_matamb = _VBO_matdiff = _VBO_matspec = _VBO_matshin = NULL;
 }
 
 Model::~Model() {
   if (_VBO_vertices != NULL) delete _VBO_vertices;
   if (_VBO_normals != NULL) delete _VBO_normals;
+  if (_VBO_uvs != NULL) delete _VBO_uvs;
   if (_VBO_matamb != NULL) delete _VBO_matamb;
   if (_VBO_matdiff != NULL) delete _VBO_matdiff;
   if (_VBO_matspec != NULL) delete _VBO_matspec;
@@ -59,6 +61,7 @@ void Model::load(std::string filename) {
     _vertices.erase(_vertices.begin(), _vertices.end());
     _normals.erase(_normals.begin(), _normals.end());
     _faces.erase(_faces.begin(), _faces.end());
+    _uvs.erase(_uvs.begin(), _uvs.end());
   }
   size_t fiPath = filename.rfind("/");
   if (fiPath == string::npos) modelPath = "";
@@ -100,10 +103,10 @@ void Model::load(std::string filename) {
 	for (int i = 0; i < 3; ++i) { ss >> coord; _normals.push_back(coord);}
 	break;
       case 't':  // texture coords.
-	if (not  texcoord) {
-	  cerr << "Found texture coordinates, which are not yet supported. Ignoring..." << endl;
-	  texcoord = true;
-	}
+        float u, v;
+        ss >> u >> v;
+        _uvs.push_back(u);
+        _uvs.push_back(v);
 	break;
       default:
 	cerr << "Seen unknown vertex info of type '" << c << "', ignoring it..." << endl;
@@ -169,7 +172,7 @@ void Model::load(std::string filename) {
   omplenormals(_faces, _vertices);  // afegim normals per cara...
 
   // Omplim els vectors per als VBO
-  ompleVBOs(_faces, _vertices, _normals, _VBO_vertices, _VBO_normals, 
+  ompleVBOs(_faces, _vertices, _normals, _uvs, _VBO_vertices, _VBO_normals, _VBO_uvs,
             _VBO_matamb, _VBO_matdiff, _VBO_matspec, _VBO_matshin);
 }
 
@@ -323,43 +326,46 @@ void Model::parseVTN(stringstream & ss, string & block) {
 #if DEBUGPARSER
   cout << "Entering parseVTN(..., \""<< block << "\")" << endl;
 #endif
-  if (not fvtn) {
-    cerr << "vtn node found: Texture coords not supported yet. Ignoring texture part..." << endl;
-    fvtn = true;
-  }
+
   Face f;
   stringstream ssb;
-  ssb.str(block);
-  int index, n, t;
-  char sep;
-  ssb >> index; ssb >> sep; assert(sep == '/'); ssb >> t >> sep; assert(sep == '/');
-  ssb >> n;
-  f.v.push_back(3*index-3); f.n.push_back(3*n-3);
+  int vIdx, tIdx, nIdx;
+  char slash;
 
-  ss >> block;
-  ssb.clear(); ssb.str(block);
-  ssb >> index; ssb >> sep; assert(sep == '/'); ssb >> t >> sep; assert(sep == '/');
-  ssb >> n;
-  f.v.push_back(3*index-3); f.n.push_back(3*n-3);
-  
-  ss >> block;
-  ssb.clear(); ssb.str(block);
-  ssb >> index; ssb >> sep; assert(sep == '/'); ssb >> t >> sep; assert(sep == '/');
-  ssb >> n;
-  f.v.push_back(3*index-3); f.n.push_back(3*n-3);
+  // Primer triangle
+  for (int i = 0; i < 3; ++i) {
+      if (i > 0) ss >> block;
+      ssb.clear(); ssb.str(block);
+
+      ssb >> vIdx >> slash; assert(slash == '/');
+      ssb >> tIdx >> slash; assert(slash == '/');
+      ssb >> nIdx;
+
+      f.v.push_back(3 * vIdx - 3);
+      f.t.push_back(2 * tIdx - 2);
+      f.n.push_back(3 * nIdx - 3);
+  }
+
   f.mat = material;
   _faces.push_back(f);
   Face fAnt(f);
-  while(ss >> block) {
-    f.v.clear(); f.n.clear();
-    ssb.clear(); ssb.str(block);
-    ssb >> index; ssb >> sep; assert(sep == '/'); ssb >> t >>sep; assert(sep == '/');
-    ssb >> n;
-    f.v.push_back(fAnt.v[0]); f.n.push_back(fAnt.n[0]);
-    f.v.push_back(fAnt.v[2]); f.n.push_back(fAnt.n[2]);
-    f.v.push_back(3*index-3); f.n.push_back(3*n-3);
-    _faces.push_back(f);
-    fAnt = f;
+
+  while (ss >> block) {
+      ssb.clear(); ssb.str(block);
+
+      ssb >> vIdx >> slash; assert(slash == '/');
+      ssb >> tIdx >> slash; assert(slash == '/');
+      ssb >> nIdx;
+
+      f.v.clear(); f.t.clear(); f.n.clear();
+
+      f.v.push_back(fAnt.v[0]); f.t.push_back(fAnt.t[0]); f.n.push_back(fAnt.n[0]);
+      f.v.push_back(fAnt.v[2]); f.t.push_back(fAnt.t[2]); f.n.push_back(fAnt.n[2]);
+      f.v.push_back(3 * vIdx - 3); f.t.push_back(2 * tIdx - 2); f.n.push_back(3 * nIdx - 3);
+
+      f.mat = material;
+      _faces.push_back(f);
+      fAnt = f;
   }
 }
 
@@ -455,39 +461,67 @@ static void omplenormals(vector<Face> &_faces,
   }
 }
 
-static void ompleVBOs(vector<Face> &_faces, 
-		      const vector<Vertex> &_vertices,
-                      const vector<Normal> &_normals,
-		      float *&_VBO_vert, float *&_VBO_norm, 
-                      float *&_VBO_mata, float *&_VBO_matd, float *&_VBO_matsp, float *&_VBO_matsh) 
+static void ompleVBOs(vector<Face>& _faces,
+    vector<Vertex> const& _vertices,
+    vector<Normal> const& _normals,
+    vector<UV> const& _texcoords,
+    float*& _VBO_vert, float*& _VBO_norm, float*& _VBO_uv,
+    float*& _VBO_mata, float*& _VBO_matd, float*& _VBO_matsp, float*& _VBO_matsh)
 {
   // Creem els VBOs amb 3*3*faces.size() doubles cadascun
   _VBO_vert = new float[3*3*_faces.size()];  
   _VBO_norm = new float[3*3*_faces.size()];
+  _VBO_uv = new float[3*2*_faces.size()];
   _VBO_mata = new float[3*3*_faces.size()];
   _VBO_matd = new float[3*3*_faces.size()];
   _VBO_matsp = new float[3*3*_faces.size()];
   _VBO_matsh = new float[3*_faces.size()];
 
-  int index = 0;
+  int index3 = 0; // Per vertex/normals/materials
+  int index2 = 0; // Per UVs
+
   for (unsigned int f = 0; f < _faces.size(); ++f) {
-    Material &mat = Materials[_faces[f].mat];
-    for (int i = 0; i < 3; ++i) {
-      int P =_faces[f].v[i];
-      for (int j = 0; j < 3; ++j) {
-        _VBO_vert[index+j] = _vertices[P+j];
-	if (_normals.size() != 0) {
-          _VBO_norm[index+j] = _normals[_faces[f].n[i]+j];
-        }
-	else {
-          _VBO_norm[index+j] = _faces[f].normalC[j];
-        }	
-        _VBO_mata[index+j] = mat.ambient[j];
-        _VBO_matd[index+j] = mat.diffuse[j];
-        _VBO_matsp[index+j] = mat.specular[j];
+      Material& mat = Materials[_faces[f].mat];
+      for (int i = 0; i < 3; ++i) {
+          int vIdx = _faces[f].v[i];
+          int nIdx = _faces[f].n[i];
+          int tIdx = (int)_faces[f].t.size() > i ? _faces[f].t[i] : -1;
+
+          // Vertex positions
+          for (int j = 0; j < 3; ++j)
+              _VBO_vert[index3 + j] = _vertices[vIdx + j];
+
+          // Normals
+          if (!_normals.empty()) {
+              for (int j = 0; j < 3; ++j)
+                  _VBO_norm[index3 + j] = _normals[nIdx + j];
+          }
+          else {
+              for (int j = 0; j < 3; ++j)
+                  _VBO_norm[index3 + j] = _faces[f].normalC[j];
+          }
+
+          // UVs (si hi ha coordenades disponibles)
+          if (tIdx >= 0 && tIdx + 1 < (int)_texcoords.size()) {
+              _VBO_uv[index2] = _texcoords[tIdx];     // u
+              _VBO_uv[index2 + 1] = _texcoords[tIdx + 1]; // v
+          }
+          else {
+              _VBO_uv[index2] = 0.0f;
+              _VBO_uv[index2 + 1] = 0.0f;
+          }
+
+          // Materials
+          for (int j = 0; j < 3; ++j) {
+              _VBO_mata[index3 + j] = mat.ambient[j];
+              _VBO_matd[index3 + j] = mat.diffuse[j];
+              _VBO_matsp[index3 + j] = mat.specular[j];
+          }
+
+          _VBO_matsh[index3 / 3] = mat.shininess;
+
+          index3 += 3;
+          index2 += 2;
       }
-      _VBO_matsh[index/3] = mat.shininess;
-      index += 3;
-    }
   }
 }
