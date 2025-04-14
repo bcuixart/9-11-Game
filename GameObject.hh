@@ -12,10 +12,12 @@ class GameManager;
 
 class GameObject {
 public:
-	GameObject(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
+	GameObject(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
 	virtual ~GameObject() = default;
 
 	string ModelName() const;
+	string TextureName() const;
+	int TextureType() const;
 
 	glm::vec3 Position() const;
 	glm::vec3 Rotation() const;
@@ -36,6 +38,8 @@ protected:
 private:
 
 	string modelName;
+	string textureName;
+	int textureType;
 };
 
 #endif

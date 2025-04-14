@@ -1,8 +1,8 @@
 #include "Plane.hh"
 #include "GameManager.hh"
 
-Plane::Plane(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
-    : GameObject(_mod, _pos, _rot, _scl) 
+Plane::Plane(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
+    : GameObject(_mod, _tex, _texType, _pos, _rot, _scl)
 {
 }
 

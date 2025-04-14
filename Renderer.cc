@@ -25,8 +25,6 @@ bool Renderer::InitializeRenderer()
 	textureLoc = glGetUniformLocation(shaderProgram, "textureSampler");
 	bendLoc = glGetUniformLocation(shaderProgram, "bend");
 
-	LoadTextureFromFile("./Assets/Textures/Texture_Tower.jpg");
-
 	return lS;
 }
 
@@ -109,15 +107,24 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 	glBindVertexArray(0);
 }
 
-void Renderer::LoadTextureFromFile(const string& filename)
+void Renderer::InitializeObjectModelTexture(GameObject* gameObject) 
 {
+	string modelTexture = gameObject->TextureName();
+	if (textureLocators.find(modelTexture) != textureLocators.end()) return;
+
+	textureLocators[modelTexture] = LoadTextureFromFile(modelTexture, gameObject->TextureType());
+}
+
+GLuint Renderer::LoadTextureFromFile(const string& filename, int textureType)
+{
+	GLuint textureData;
 	glGenTextures(1, &textureData);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureData);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureType);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -125,15 +132,15 @@ void Renderer::LoadTextureFromFile(const string& filename)
 	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
 	if (!data) {
 		cout << "Error carregant textura '" << filename << "': " << stbi_failure_reason() << endl;
-		return;
+		return 0;
 	}
 	if (data == nullptr) {
 		cout << "Failed to load texture image: " << filename << endl;
-		return;
+		return 0;
 	}
 	if (textureData == 0) {
 		cout << "Failed to generate texture ID" << endl;
-		return;
+		return 0;
 	}
 	cout << "Carregada: " << filename << " (" << width << "x" << height << ", " << nrChannels << " canals)" << endl;
 
@@ -151,6 +158,8 @@ void Renderer::LoadTextureFromFile(const string& filename)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(data);
+
+	return textureData;
 }
 
 void Renderer::RenderObject(GameObject* gameObject) 
@@ -163,9 +172,12 @@ void Renderer::RenderObject(GameObject* gameObject)
 
 	glUniform3fv(bendLoc, 1, &gameObject->tower_Bend[0]);
 
+	string textureName = gameObject->TextureName();
+	if (textureLocators.find(textureName) == textureLocators.end()) return;
+
 	glUniform1i(textureLoc, 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureData);
+	glBindTexture(GL_TEXTURE_2D, textureLocators[textureName]);
 
 	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale());
 	glBindVertexArray(VAO);

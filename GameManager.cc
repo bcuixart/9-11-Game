@@ -49,6 +49,7 @@ void GameManager::InstantiateGameObject(GameObject* gameObject)
 {
 	currentGameObjects.push_back(gameObject);
 	renderer->InitializeObjectModelVAO(gameObject);
+	renderer->InitializeObjectModelTexture(gameObject);
 }
 
 void GameManager::Update() 

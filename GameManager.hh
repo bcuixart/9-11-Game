@@ -25,7 +25,7 @@ public:
 
 	void InstantiateGameObject(GameObject* gameObject);
 
-	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
+	GameObject* planeGameObject = new Plane("./Assets/Models/Plane_Interior.obj", "./Assets/Textures/Plane_Interior.png", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
 
 	void TowerHit(GameObject* tower);
 
@@ -38,8 +38,8 @@ private:
 
 	list<GameObject*> currentGameObjects;
 
-	GameObject* towerNGameObject = new Tower("./Assets/Models/Tower_N.obj", glm::vec3(-4, 0, -3.15), glm::vec3(0), glm::vec3(1));
-	GameObject* towerSGameObject = new Tower("./Assets/Models/Tower_S.obj", glm::vec3(4, 0, 3.15), glm::vec3(0), glm::vec3(1));
+	GameObject* towerNGameObject = new Tower("./Assets/Models/Tower_N.obj", "./Assets/Textures/Texture_Tower.jpg", GL_REPEAT, glm::vec3(-4, 0, -3.15), glm::vec3(0), glm::vec3(1));
+	GameObject* towerSGameObject = new Tower("./Assets/Models/Tower_S.obj", "./Assets/Textures/Texture_Tower.jpg", GL_REPEAT, glm::vec3(4, 0, 3.15), glm::vec3(0), glm::vec3(1));
 
 	vector<GameObject*> initialGameObjects = {
 		towerNGameObject,

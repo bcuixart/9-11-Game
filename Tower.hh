@@ -11,7 +11,7 @@ using namespace std;
 
 class Tower : public GameObject {
 public:
-	Tower(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
+	Tower(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
 
 	virtual void Update();
 

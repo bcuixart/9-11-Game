@@ -28,7 +28,7 @@ public:
 	void DeleteRenderer();
 
 	void InitializeObjectModelVAO(GameObject* gameObject);
-	void LoadTextureFromFile(const string& filename);
+	void InitializeObjectModelTexture(GameObject* gameObject);
 	void RenderObject(GameObject* gameObject);
 
 	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
@@ -42,6 +42,8 @@ private:
 
 	const string SHADER_TO_LOAD = "./Assets/Shaders/basicShader";
 	
+	GLuint LoadTextureFromFile(const string& filename, int textureType);
+
 	GLuint vertexShader;
 	GLuint fragmentShader;
 	GLuint shaderProgram;
@@ -53,12 +55,11 @@ private:
 	GLuint viewLoc;
 	GLuint TGLoc;
 	GLuint bendLoc;
-
 	GLuint textureLoc;
-	GLuint textureData;
 
 	// GLuint, int = VAO, modelFaces
 	map<string, pair<GLuint, int>> modelVAOs;
+	map<string, GLuint> textureLocators;
 };
 
 #endif
