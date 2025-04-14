@@ -16,6 +16,9 @@ void Plane::Update()
         -sin(rotacioRadians)
     ) * PLANE_SPEED;
 
+    bool inCutscene = GameManager::instance->inCutscene;
+
+    if (inCutscene) return;
 
     if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS) {
         rotation.y -= PLANE_TURN_SPEED;

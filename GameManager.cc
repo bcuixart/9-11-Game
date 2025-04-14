@@ -30,6 +30,9 @@ void GameManager::TowerHit(GameObject* tower)
 	cutscene_Left_Time = CUTSCENE_DURATION;
 	cutsceneLookAt = tower->Position();
 	inCutscene = true;
+
+	if (tower == towerNGameObject) towerSGameObject->OtherTowerHit();
+	if (tower == towerSGameObject) towerNGameObject->OtherTowerHit();
 }
 
 void GameManager::Start() 

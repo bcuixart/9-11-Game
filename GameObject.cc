@@ -5,6 +5,10 @@ void GameObject::Update()
 {
 }
 
+void GameObject::OtherTowerHit()
+{
+}
+
 string GameObject::ModelName() const 
 {
 	return modelName;

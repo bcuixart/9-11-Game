@@ -15,16 +15,19 @@ public:
 
 	virtual void Update();
 
+	virtual void OtherTowerHit();
+
 protected:
 
 private:
 
 	bool alive = true;
 
-	bool canMove = false;
+	bool canMove = true;
 	bool canBend = false;
 
-	const float TOWER_MOVE_SPEED = 0.001;
+	//const float TOWER_MOVE_SPEED = 0.001;
+	const float TOWER_MOVE_SPEED = 0.00025;
 	const float TOWER_MOVE_DISTANCE = 40;
 	const float TOWER_HEIGHT_INCREMENT = 0.01;
 	const float TOWER_HEIGHT_JUMP_HEIGHT = 5;
@@ -32,13 +35,12 @@ private:
 
 	const float TOWER_BEND_MAGNITUDE_MAX = 12;
 	const float TOWER_BEND_SPEED = 0.16;
-	const float TOWER_BEND_DISTANCE = 20;
+	const float TOWER_BEND_DISTANCE = 35;
 	const float TOWER_BEND_SNAP = 0.1;
 
 	const float HITBOXSIZE = 6.3;
 
 	bool isPlaneInTower(glm::vec3 planePosition);
-
 };
 
 #endif

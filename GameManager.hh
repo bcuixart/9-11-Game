@@ -29,6 +29,8 @@ public:
 
 	void TowerHit(GameObject* tower);
 
+	bool inCutscene = false;
+
 private:
 	Renderer* renderer;
 	Camera* camera;
@@ -48,7 +50,6 @@ private:
 	const float CUTSCENE_DURATION = 1000;
 	const float CUTSCENE_CAMERA_DISTANCE = 20;
 	float cutscene_Left_Time = 0;
-	bool inCutscene = false;
 	glm::vec3 cutsceneLookAt;
 };
 

@@ -8,13 +8,21 @@ Tower::Tower(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
 
 bool Tower::isPlaneInTower(glm::vec3 planePosition) 
 {
-    float xMin = position.x - HITBOXSIZE / 2;
-    float xMax = position.x + HITBOXSIZE / 2;    
-    float zMin = position.z - HITBOXSIZE / 2;
-    float zMax = position.z + HITBOXSIZE / 2;
+    float xMin = position.x + tower_Bend.x - HITBOXSIZE / 2;
+    float xMax = position.x + tower_Bend.x + HITBOXSIZE / 2;
+    float zMin = position.z + tower_Bend.z - HITBOXSIZE / 2;
+    float zMax = position.z + tower_Bend.z + HITBOXSIZE / 2;
 
     return planePosition.x > xMin && planePosition.x < xMax &&
         planePosition.z > zMin && planePosition.z < zMax;
+}
+
+void Tower::OtherTowerHit() 
+{
+    if (alive) {
+        canMove = false;
+        canBend = true;
+    }
 }
 
 void Tower::Update()
@@ -30,8 +38,10 @@ void Tower::Update()
 
     float distance = glm::distance(position, plane->Position());
 
+    bool inCutscene = GameManager::instance->inCutscene;
+
     // MOVE TOWER
-    if (alive) {
+    if (alive && !inCutscene) {
         if (canMove && distance < TOWER_MOVE_DISTANCE) {
             position += planeToTowerVector * TOWER_MOVE_SPEED;
             
@@ -50,12 +60,12 @@ void Tower::Update()
             }
         }
     }
-    else {
+    else if (!alive) {
         tower_Height_Lerp -= TOWER_HEIGHT_INCREMENT;
     }
 
     // BEND TOWER
-    if (alive && canBend && distance < TOWER_BEND_DISTANCE) {
+    if (alive && !inCutscene && canBend && distance < TOWER_BEND_DISTANCE) {
         glm::vec3 possibleBendPos_1 = position + rightVector * TOWER_BEND_MAGNITUDE_MAX;
         glm::vec3 possibleBendPos_2 = position + leftVector * TOWER_BEND_MAGNITUDE_MAX;
 
@@ -76,7 +86,7 @@ void Tower::Update()
             (tower_Bend.z > tower_Expected_Bend.z ? tower_Bend.z - TOWER_BEND_SPEED : tower_Bend.z + TOWER_BEND_SPEED));
 
 
-    if (alive && isPlaneInTower(plane->Position())) {
+    if (alive && !inCutscene && isPlaneInTower(plane->Position())) {
         alive = false;
 
         GameManager::instance->TowerHit(this);

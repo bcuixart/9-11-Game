@@ -22,6 +22,7 @@ public:
 	glm::vec3 Scale() const;
 
 	virtual void Update();
+	virtual void OtherTowerHit();
 
 	glm::vec3 tower_Bend = glm::vec3(0, 0, 0);
 
