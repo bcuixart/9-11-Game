@@ -6,6 +6,17 @@ Tower::Tower(const string& _mod, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
 {
 }
 
+bool Tower::isPlaneInTower(glm::vec3 planePosition) 
+{
+    float xMin = position.x - HITBOXSIZE / 2;
+    float xMax = position.x + HITBOXSIZE / 2;    
+    float zMin = position.z - HITBOXSIZE / 2;
+    float zMax = position.z + HITBOXSIZE / 2;
+
+    return planePosition.x > xMin && planePosition.x < xMax &&
+        planePosition.z > zMin && planePosition.z < zMax;
+}
+
 void Tower::Update()
 {
     GameObject* plane = GameManager::instance->planeGameObject;
@@ -19,11 +30,10 @@ void Tower::Update()
 
     float distance = glm::distance(position, plane->Position());
 
-    // MOVE TOWER N
+    // MOVE TOWER
     if (alive) {
         if (canMove && distance < TOWER_MOVE_DISTANCE) {
             position += planeToTowerVector * TOWER_MOVE_SPEED;
-
             
             //if (tower_Height_Lerp == 0) sound_Tower_Jump->play();
             tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
@@ -41,7 +51,35 @@ void Tower::Update()
         }
     }
     else {
-        //tower_Height_Lerp -= TOWER_HEIGHT_INCREMENT;
+        tower_Height_Lerp -= TOWER_HEIGHT_INCREMENT;
+    }
+
+    // BEND TOWER
+    if (alive && canBend && distance < TOWER_BEND_DISTANCE) {
+        glm::vec3 possibleBendPos_1 = position + rightVector * TOWER_BEND_MAGNITUDE_MAX;
+        glm::vec3 possibleBendPos_2 = position + leftVector * TOWER_BEND_MAGNITUDE_MAX;
+
+        float dist1 = glm::distance(plane->Position(), possibleBendPos_1);
+        float dist2 = glm::distance(plane->Position(), possibleBendPos_2);
+        if (dist1 >= dist2) tower_Expected_Bend = glm::cross(forwardVector, glm::vec3(0, 1, 0)) * TOWER_BEND_MAGNITUDE_MAX;
+        else tower_Expected_Bend = glm::cross(forwardVector, glm::vec3(0, -1, 0)) * TOWER_BEND_MAGNITUDE_MAX;
+    }
+    else {
+        tower_Expected_Bend = glm::vec3(0,0,0);
+    }
+
+    tower_Bend =
+        glm::vec3(abs(tower_Bend.x - tower_Expected_Bend.x) < TOWER_BEND_SNAP ? tower_Expected_Bend.x :
+            (tower_Bend.x > tower_Expected_Bend.x ? tower_Bend.x - TOWER_BEND_SPEED : tower_Bend.x + TOWER_BEND_SPEED),
+            0,
+            abs(tower_Bend.z - tower_Expected_Bend.z) < TOWER_BEND_SNAP ? tower_Expected_Bend.z :
+            (tower_Bend.z > tower_Expected_Bend.z ? tower_Bend.z - TOWER_BEND_SPEED : tower_Bend.z + TOWER_BEND_SPEED));
+
+
+    if (alive && isPlaneInTower(plane->Position())) {
+        alive = false;
+
+        GameManager::instance->TowerHit(this);
     }
 
     position.y = -TOWER_HEIGHT_JUMP_HEIGHT * tower_Height_Lerp * (tower_Height_Lerp - 1);

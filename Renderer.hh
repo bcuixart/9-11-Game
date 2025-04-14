@@ -52,6 +52,7 @@ private:
 	GLuint projLoc;
 	GLuint viewLoc;
 	GLuint TGLoc;
+	GLuint bendLoc;
 
 	GLuint textureLoc;
 	GLuint textureData;

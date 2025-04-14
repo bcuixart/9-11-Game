@@ -25,7 +25,9 @@ public:
 
 	void InstantiateGameObject(GameObject* gameObject);
 
-	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, -50), glm::vec3(0, -90, 0), glm::vec3(1));
+	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
+
+	void TowerHit(GameObject* tower);
 
 private:
 	Renderer* renderer;
@@ -42,6 +44,12 @@ private:
 		towerSGameObject,
 		planeGameObject
 	};
+
+	const float CUTSCENE_DURATION = 1000;
+	const float CUTSCENE_CAMERA_DISTANCE = 20;
+	float cutscene_Left_Time = 0;
+	bool inCutscene = false;
+	glm::vec3 cutsceneLookAt;
 };
 
 #endif

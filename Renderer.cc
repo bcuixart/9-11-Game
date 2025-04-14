@@ -23,6 +23,7 @@ bool Renderer::InitializeRenderer()
 	colorLoc = glGetAttribLocation(shaderProgram, "color");
 	TGLoc = glGetUniformLocation(shaderProgram, "TG");
 	textureLoc = glGetUniformLocation(shaderProgram, "textureSampler");
+	bendLoc = glGetUniformLocation(shaderProgram, "bend");
 
 	LoadTextureFromFile("./Assets/Textures/Texture_Tower.jpg");
 
@@ -159,6 +160,8 @@ void Renderer::RenderObject(GameObject* gameObject)
 	string modelName = gameObject->ModelName();
 	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
 	GLuint VAO = modelVAOs[modelName].first;
+
+	glUniform3fv(bendLoc, 1, &gameObject->tower_Bend[0]);
 
 	glUniform1i(textureLoc, 0);
 	glActiveTexture(GL_TEXTURE0);
