@@ -83,13 +83,13 @@ void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position)
     ALuint source;
     alGenSources(1, &source);
     alSourcei(source, AL_BUFFER, clip.buffer);
-    alSourcef(source, AL_GAIN, 1.0f);
+    alSourcef(source, AL_GAIN, 2.0f);
     alSourcef(source, AL_PITCH, 1.0f);
 
     alSource3f(source, AL_POSITION, position[0], position[1], position[2]);
     alSourcei(source, AL_SOURCE_RELATIVE, AL_FALSE); // It's in world space
-    alSourcef(source, AL_ROLLOFF_FACTOR, 1.0f);       // Controls how volume decreases with distance
-    alSourcef(source, AL_REFERENCE_DISTANCE, 1.0f);   // Distance where it starts to roll off
+    alSourcef(source, AL_ROLLOFF_FACTOR, 0.2f);       // Controls how volume decreases with distance
+    alSourcef(source, AL_REFERENCE_DISTANCE, 2.0f);   // Distance where it starts to roll off
 
     alSourcePlay(source);
 
@@ -114,7 +114,6 @@ AudioEngine::AudioClip AudioEngine::LoadOGG(const char* filename)
 
     free(output);
 
-    cout << "Loaded audio" << endl;
     return { buffer, format, sampleRate };
 }
 

@@ -42,6 +42,24 @@ private:
 	const float HITBOXSIZE = 6.3;
 
 	bool isPlaneInTower(glm::vec3 planePosition);
+
+	void PlayRandomSound(const string* sounds);
+
+	const string jumpSounds[5] = {
+		"./Assets/Audio/Audio_Tower_Jump001.ogg",
+		"./Assets/Audio/Audio_Tower_Jump002.ogg",
+		"./Assets/Audio/Audio_Tower_Jump003.ogg",
+		"./Assets/Audio/Audio_Tower_Jump004.ogg",
+		"./Assets/Audio/Audio_Tower_Jump005.ogg"
+	};
+
+	const string thudSounds[5] = {
+		"./Assets/Audio/Audio_Tower_Thud001.ogg",
+		"./Assets/Audio/Audio_Tower_Thud002.ogg",
+		"./Assets/Audio/Audio_Tower_Thud003.ogg",
+		"./Assets/Audio/Audio_Tower_Thud004.ogg",
+		"./Assets/Audio/Audio_Tower_Thud005.ogg"
+	};
 };
 
 #endif

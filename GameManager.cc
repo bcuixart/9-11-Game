@@ -41,6 +41,8 @@ void GameManager::TowerHit(GameObject* tower)
 
 void GameManager::Start() 
 {
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
 	camera = new Camera(glm::vec3(0,100,50), glm::vec3(-45,0,0), 45, 1, 0.1, 100);
 
 	for (int i = 0; i < initialGameObjects.size(); ++i) 
@@ -54,6 +56,11 @@ void GameManager::InstantiateGameObject(GameObject* gameObject)
 	currentGameObjects.push_back(gameObject);
 	renderer->InitializeObjectModelVAO(gameObject);
 	renderer->InitializeObjectModelTexture(gameObject);
+}
+
+int GameManager::RNG() 
+{
+	return std::rand();
 }
 
 void GameManager::Update() 

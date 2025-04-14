@@ -4,6 +4,9 @@
 #include <vector>
 #include <list>
 
+#include <cstdlib>
+#include <ctime>
+
 #include "Renderer.hh"
 #include "AudioEngine.hh"
 #include "Camera.hh"
@@ -25,6 +28,8 @@ public:
 	int GetInput(int key);
 
 	void InstantiateGameObject(GameObject* gameObject);
+
+	int RNG();
 
 	void PlayAudio(const string& audioName);
 	void PlayAudio3D(const string& audioName, const glm::vec3 position);

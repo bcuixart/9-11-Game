@@ -25,6 +25,12 @@ void Tower::OtherTowerHit()
     }
 }
 
+void Tower::PlayRandomSound(const string* sounds)
+{
+    int index = GameManager::instance->RNG() % 5;
+    GameManager::instance->PlayAudio3D(sounds[index], position);
+}
+
 void Tower::Update()
 {
     GameObject* plane = GameManager::instance->planeGameObject;
@@ -45,11 +51,11 @@ void Tower::Update()
         if (canMove && distance < TOWER_MOVE_DISTANCE) {
             position += planeToTowerVector * TOWER_MOVE_SPEED;
             
-            if (tower_Height_Lerp == 0) GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Jump001.ogg", position);
+            if (tower_Height_Lerp == 0) PlayRandomSound(jumpSounds);
             tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
             if (!playedThudSound && tower_Height_Lerp > 0.8) {
                 playedThudSound = true;
-                GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Thud001.ogg", position);
+                PlayRandomSound(thudSounds);
             }
             if (tower_Height_Lerp > 1) {
                 playedThudSound = false;
@@ -60,7 +66,7 @@ void Tower::Update()
             if (tower_Height_Lerp > 0) tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
             if (!playedThudSound && tower_Height_Lerp > 0.8) {
                 playedThudSound = true;
-                GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Thud001.ogg", position);
+                PlayRandomSound(thudSounds);
             }
             if (tower_Height_Lerp > 1) {
                 playedThudSound = false;
