@@ -5,9 +5,10 @@
 #include <list>
 
 #include "Renderer.hh"
+#include "Camera.hh"
 #include "GameObject.hh"
 #include "Plane.hh"
-#include "Camera.hh"
+#include "Tower.hh"
 
 using namespace std;
 
@@ -24,6 +25,8 @@ public:
 
 	void InstantiateGameObject(GameObject* gameObject);
 
+	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, -50), glm::vec3(0, -90, 0), glm::vec3(1));
+
 private:
 	Renderer* renderer;
 	Camera* camera;
@@ -31,11 +34,12 @@ private:
 
 	list<GameObject*> currentGameObjects;
 
-	GameObject* planeGameObject = new Plane("./Assets/Models/Plane.obj", glm::vec3(0, 30, 50), glm::vec3(0, 90, 0), glm::vec3(1));
+	GameObject* towerNGameObject = new Tower("./Assets/Models/Tower_N.obj", glm::vec3(-4, 0, -3.15), glm::vec3(0), glm::vec3(1));
+	GameObject* towerSGameObject = new Tower("./Assets/Models/Tower_S.obj", glm::vec3(4, 0, 3.15), glm::vec3(0), glm::vec3(1));
 
 	vector<GameObject*> initialGameObjects = {
-		new GameObject("./Assets/Models/Tower_N.obj", glm::vec3(6.4,0,0), glm::vec3(0), glm::vec3(1)),
-		new GameObject("./Assets/Models/Tower_S.obj", glm::vec3(-6.4,0,0), glm::vec3(0), glm::vec3(1)),
+		towerNGameObject,
+		towerSGameObject,
 		planeGameObject
 	};
 };

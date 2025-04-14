@@ -19,7 +19,7 @@ protected:
 
 private:
 
-	const float PLANE_SPEED = 0.005;
+	const float PLANE_SPEED = 0.009;
 	const float PLANE_TURN_SPEED = 0.1;
 };
 
