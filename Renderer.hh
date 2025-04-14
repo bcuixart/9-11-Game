@@ -17,7 +17,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GameObject.hh"
-#include "Model.hh"
 
 using namespace std;
 
@@ -55,6 +54,7 @@ private:
 	GLuint TGLoc;
 
 	GLuint textureLoc;
+	GLuint textureData;
 
 	// GLuint, int = VAO, modelFaces
 	map<string, pair<GLuint, int>> modelVAOs;
