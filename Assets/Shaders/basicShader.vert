@@ -6,6 +6,7 @@ layout(location = 2) in vec2 uv;
 
 out vec3 vColor;
 out vec2 vUV;
+out vec3 fogPos;
 
 uniform mat4 TG;
 uniform mat4 PM;
@@ -21,8 +22,6 @@ void main()  {
     }
 
     vColor = color;
-    //vUV = vec2(0.0805555556, 1); // NEGRE
     vUV = uv;
-
-    //vUV = vec2(vertex.x / 6, vertex.y / 30);
+    fogPos = vertex;
 }

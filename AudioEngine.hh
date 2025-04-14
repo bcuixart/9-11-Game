@@ -19,8 +19,8 @@ public:
 
 	bool InitializeAudioEngine();
 
-	void PlayAudio(const string& audioName);
-	void PlayAudio3D(const string& audioName, const ALfloat* position);
+	void PlayAudio(const string& audioName, bool loop);
+	void PlayAudio3D(const string& audioName, const ALfloat* position, bool loop);
 
 	void Update(const ALfloat* position, const ALfloat* forward);
 

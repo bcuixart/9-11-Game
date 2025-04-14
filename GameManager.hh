@@ -31,10 +31,11 @@ public:
 
 	int RNG();
 
-	void PlayAudio(const string& audioName);
-	void PlayAudio3D(const string& audioName, const glm::vec3 position);
+	void PlayAudio(const string& audioName, bool loop);
+	void PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop);
 
 	GameObject* planeGameObject = new Plane("./Assets/Models/Plane_Interior.obj", "./Assets/Textures/Plane_Interior.png", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
+	GameObject* planeGameObjectOutside = new Plane("./Assets/Models/Plane.obj", "./Assets/Textures/Plane.png", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
 
 	void TowerHit(GameObject* tower);
 
@@ -54,7 +55,9 @@ private:
 	vector<GameObject*> initialGameObjects = {
 		towerNGameObject,
 		towerSGameObject,
-		planeGameObject
+		planeGameObject,
+		planeGameObjectOutside,
+		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1))
 	};
 
 	const float CUTSCENE_DURATION = 1000;

@@ -28,7 +28,7 @@ void Tower::OtherTowerHit()
 void Tower::PlayRandomSound(const string* sounds)
 {
     int index = GameManager::instance->RNG() % 5;
-    GameManager::instance->PlayAudio3D(sounds[index], position);
+    GameManager::instance->PlayAudio3D(sounds[index], position, false);
 }
 
 void Tower::Update()

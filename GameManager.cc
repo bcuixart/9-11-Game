@@ -16,20 +16,20 @@ int GameManager::GetInput(int key)
 	return glfwGetKey(window, key);
 }
 
-void GameManager::PlayAudio(const string& audioName) 
+void GameManager::PlayAudio(const string& audioName, bool loop)
 {
-	audioEngine->PlayAudio(audioName);
+	audioEngine->PlayAudio(audioName, loop);
 }
 
-void GameManager::PlayAudio3D(const string& audioName, const glm::vec3 position)
+void GameManager::PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop)
 {
 	ALfloat pos[] = { position.x, position.y, position.z };
-	audioEngine->PlayAudio3D(audioName, pos);
+	audioEngine->PlayAudio3D(audioName, pos, loop);
 }
 
 void GameManager::TowerHit(GameObject* tower) 
 {
-	PlayAudio3D("./Assets/Audio/Audio_Tower_Impact.ogg", tower->Position());
+	PlayAudio3D("./Assets/Audio/Audio_Tower_Impact.ogg", tower->Position(), false);
 
 	cutscene_Left_Time = CUTSCENE_DURATION;
 	cutsceneLookAt = tower->Position();
@@ -43,12 +43,14 @@ void GameManager::Start()
 {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-	camera = new Camera(glm::vec3(0,100,50), glm::vec3(-45,0,0), 45, 1, 0.1, 100);
+	camera = new Camera(glm::vec3(0,100,50), glm::vec3(-45,0,0), 45, 1, 0.1, 1000000);
 
 	for (int i = 0; i < initialGameObjects.size(); ++i) 
 	{
 		InstantiateGameObject(initialGameObjects[i]);
 	}
+
+	PlayAudio("./Assets/Audio/Audio_Plane_Loop.ogg", true);
 }
 
 void GameManager::InstantiateGameObject(GameObject* gameObject) 

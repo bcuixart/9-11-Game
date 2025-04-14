@@ -51,7 +51,7 @@ void AudioEngine::CleanUpSources()
     }
 }
 
-void AudioEngine::PlayAudio(const string& audioName)
+void AudioEngine::PlayAudio(const string& audioName, bool loop)
 {
     auto it = audioClips.find(audioName);
     if (it == audioClips.end()) {
@@ -63,14 +63,16 @@ void AudioEngine::PlayAudio(const string& audioName)
 
     ALuint source;
     alGenSources(1, &source);
+    alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE);
     alSourcei(source, AL_BUFFER, clip.buffer);
+    alSourcei(source, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 
     alSourcePlay(source);
 
     activeSources.push_back(source);
 }
 
-void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position)
+void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position, bool loop)
 {
     auto it = audioClips.find(audioName);
     if (it == audioClips.end()) {
@@ -90,6 +92,7 @@ void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position)
     alSourcei(source, AL_SOURCE_RELATIVE, AL_FALSE); // It's in world space
     alSourcef(source, AL_ROLLOFF_FACTOR, 0.2f);       // Controls how volume decreases with distance
     alSourcef(source, AL_REFERENCE_DISTANCE, 2.0f);   // Distance where it starts to roll off
+    alSourcei(source, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 
     alSourcePlay(source);
 
