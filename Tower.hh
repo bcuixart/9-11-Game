@@ -29,9 +29,10 @@ private:
 	//const float TOWER_MOVE_SPEED = 0.001;
 	const float TOWER_MOVE_SPEED = 0.00025;
 	const float TOWER_MOVE_DISTANCE = 40;
-	const float TOWER_HEIGHT_INCREMENT = 0.01;
+	const float TOWER_HEIGHT_INCREMENT = 0.005;
 	const float TOWER_HEIGHT_JUMP_HEIGHT = 5;
 	float tower_Height_Lerp = 0;
+	bool playedThudSound = false;
 
 	const float TOWER_BEND_MAGNITUDE_MAX = 12;
 	const float TOWER_BEND_SPEED = 0.16;

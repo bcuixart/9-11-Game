@@ -2,9 +2,10 @@
 
 GameManager* GameManager::instance = nullptr;
 
-GameManager::GameManager(Renderer* _renderer, GLFWwindow* _window)
+GameManager::GameManager(Renderer* _renderer, AudioEngine* _audioEngine, GLFWwindow* _window)
 {
 	renderer = _renderer;
+	audioEngine = _audioEngine;
 	window = _window;
 
 	GameManager::instance = this;
@@ -15,18 +16,21 @@ int GameManager::GetInput(int key)
 	return glfwGetKey(window, key);
 }
 
-/*
-void GameManager::GetInput() 
+void GameManager::PlayAudio(const string& audioName) 
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		cout << "Wow, you pressed a key, so proud." << endl;
-	}
+	audioEngine->PlayAudio(audioName);
 }
-*/
+
+void GameManager::PlayAudio3D(const string& audioName, const glm::vec3 position)
+{
+	ALfloat pos[] = { position.x, position.y, position.z };
+	audioEngine->PlayAudio3D(audioName, pos);
+}
 
 void GameManager::TowerHit(GameObject* tower) 
 {
-	cout << "Cutscene start" << endl;
+	PlayAudio3D("./Assets/Audio/Audio_Tower_Impact.ogg", tower->Position());
+
 	cutscene_Left_Time = CUTSCENE_DURATION;
 	cutsceneLookAt = tower->Position();
 	inCutscene = true;
@@ -65,11 +69,11 @@ void GameManager::Update()
 		renderer->RenderObject(*it);
 	}
 
+	glm::vec3 cameraPosition;
 	if (inCutscene) {
 		--cutscene_Left_Time;
 
 		if (cutscene_Left_Time < 0) {
-			cout << "Cutscene end" << endl;
 			inCutscene = false;
 		}
 
@@ -79,10 +83,19 @@ void GameManager::Update()
 		glm::vec3 cutscenePos = cutsceneLookAt - CUTSCENE_CAMERA_DISTANCE * forwardVector;
 		cutscenePos.y = 35;
 		camera->MoveCamera(cutscenePos);
+		cameraPosition = cutscenePos;
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(-20, -90, 0));
 	}
 	else {
 		camera->MoveCamera(planeGameObject->Position());
+		cameraPosition = planeGameObject->Position();
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));
 	}
+
+	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y -90), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
+
+	float cameraPos[] = { cameraPosition.x, cameraPosition.y, cameraPosition.z };
+	float cameraForward[] = { forwardVector.x, forwardVector.y, forwardVector.z };
+	audioEngine->Update(cameraPos, cameraForward);
 }

@@ -46,10 +46,17 @@ int main()
 
 	Renderer* renderer = new Renderer();
 	if (!renderer->InitializeRenderer()) {
+		cout << "ERROR: Renderer failed to initialize" << endl;
 		glfwTerminate();
 	}
 
-	GameManager* gameManager = new GameManager(renderer, window);
+	AudioEngine* audioEngine = new AudioEngine();
+	if (!audioEngine->InitializeAudioEngine()) {
+		cout << "ERROR: Audio engine failed to initialize" << endl;
+		glfwTerminate();
+	}
+
+	GameManager* gameManager = new GameManager(renderer, audioEngine, window);
 	gameManager->Start();
 
 	glClearColor(0.5, 0.7, 1.0, 1.0);
@@ -67,6 +74,7 @@ int main()
 
 	glfwDestroyWindow(window);
 	renderer->DeleteRenderer();
+	audioEngine->DeleteAudioEngine();
 	glfwTerminate();
 
 }

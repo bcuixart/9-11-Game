@@ -5,6 +5,7 @@
 #include <list>
 
 #include "Renderer.hh"
+#include "AudioEngine.hh"
 #include "Camera.hh"
 #include "GameObject.hh"
 #include "Plane.hh"
@@ -14,7 +15,7 @@ using namespace std;
 
 class GameManager {
 public:
-	GameManager(Renderer* _renderer, GLFWwindow* _window);
+	GameManager(Renderer* _renderer, AudioEngine* _audioEngine, GLFWwindow* _window);
 
 	static GameManager* instance;
 
@@ -25,6 +26,9 @@ public:
 
 	void InstantiateGameObject(GameObject* gameObject);
 
+	void PlayAudio(const string& audioName);
+	void PlayAudio3D(const string& audioName, const glm::vec3 position);
+
 	GameObject* planeGameObject = new Plane("./Assets/Models/Plane_Interior.obj", "./Assets/Textures/Plane_Interior.png", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
 
 	void TowerHit(GameObject* tower);
@@ -33,6 +37,7 @@ public:
 
 private:
 	Renderer* renderer;
+	AudioEngine* audioEngine;
 	Camera* camera;
 	GLFWwindow* window;
 

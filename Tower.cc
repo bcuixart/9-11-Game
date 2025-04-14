@@ -45,17 +45,25 @@ void Tower::Update()
         if (canMove && distance < TOWER_MOVE_DISTANCE) {
             position += planeToTowerVector * TOWER_MOVE_SPEED;
             
-            //if (tower_Height_Lerp == 0) sound_Tower_Jump->play();
+            if (tower_Height_Lerp == 0) GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Jump001.ogg", position);
             tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
+            if (!playedThudSound && tower_Height_Lerp > 0.8) {
+                playedThudSound = true;
+                GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Thud001.ogg", position);
+            }
             if (tower_Height_Lerp > 1) {
-                //sound_Tower_Thud->play();
+                playedThudSound = false;
                 tower_Height_Lerp = 0;
             }
         }
         else {
             if (tower_Height_Lerp > 0) tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
+            if (!playedThudSound && tower_Height_Lerp > 0.8) {
+                playedThudSound = true;
+                GameManager::instance->PlayAudio3D("./Assets/Audio/Audio_Tower_Thud001.ogg", position);
+            }
             if (tower_Height_Lerp > 1) {
-                //sound_Tower_Thud->play();
+                playedThudSound = false;
                 tower_Height_Lerp = 0;
             }
         }
@@ -92,5 +100,5 @@ void Tower::Update()
         GameManager::instance->TowerHit(this);
     }
 
-    position.y = -TOWER_HEIGHT_JUMP_HEIGHT * tower_Height_Lerp * (tower_Height_Lerp - 1);
+    position.y = TOWER_HEIGHT_JUMP_HEIGHT * tower_Height_Lerp * (tower_Height_Lerp - 1) * (tower_Height_Lerp - .8);
 }

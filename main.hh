@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Renderer.hh"
+#include "AudioEngine.hh"
 #include "GameManager.hh"
 
 using namespace std;
