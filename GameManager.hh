@@ -13,6 +13,7 @@
 #include "GameObject.hh"
 #include "Plane.hh"
 #include "Tower.hh"
+#include "StaminaBar.hh"
 
 using namespace std;
 
@@ -57,7 +58,9 @@ private:
 		towerSGameObject,
 		planeGameObject,
 		planeGameObjectOutside,
-		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1))
+		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1)),
+		new GameObject("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Background.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.9, -.5), glm::vec3(0, 0, 0), glm::vec3(.4, .2, 0)),
+		new StaminaBar("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Bar.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.945, -1), glm::vec3(0, 0, 0), glm::vec3(.4 * 0.896484375, .2 * 0.400390625, 0))
 	};
 
 	const float CUTSCENE_DURATION = 1000;

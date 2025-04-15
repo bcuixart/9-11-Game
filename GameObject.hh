@@ -26,6 +26,7 @@ public:
 
 	virtual void Update();
 	virtual void OtherTowerHit();
+	virtual float StaminaPercentage() const;
 
 	glm::vec3 tower_Bend = glm::vec3(0, 0, 0);
 

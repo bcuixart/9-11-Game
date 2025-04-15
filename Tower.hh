@@ -26,8 +26,8 @@ private:
 	bool canMove = true;
 	bool canBend = false;
 
-	//const float TOWER_MOVE_SPEED = 0.001;
-	const float TOWER_MOVE_SPEED = 0.00025;
+	const float TOWER_MOVE_SPEED = 0.0025;
+	//const float TOWER_MOVE_SPEED = 0.00025;
 	const float TOWER_MOVE_DISTANCE = 40;
 	const float TOWER_HEIGHT_INCREMENT = 0.005;
 	const float TOWER_HEIGHT_JUMP_HEIGHT = 5;

@@ -9,6 +9,11 @@ void GameObject::OtherTowerHit()
 {
 }
 
+float GameObject::StaminaPercentage() const
+{
+	return 0;
+}
+
 string GameObject::ModelName() const 
 {
 	return modelName;
