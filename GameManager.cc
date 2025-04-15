@@ -101,6 +101,8 @@ void GameManager::Update()
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));
 	}
 
+	renderer->CameraFogPos(cameraPosition);
+
 	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y -90), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
 

@@ -6,7 +6,7 @@ layout(location = 2) in vec2 uv;
 
 out vec3 vColor;
 out vec2 vUV;
-out vec3 fogPos;
+out vec3 fragPosWorld; 
 
 uniform mat4 TG;
 uniform mat4 PM;
@@ -23,5 +23,5 @@ void main()  {
 
     vColor = color;
     vUV = uv;
-    fogPos = vertex;
+    fragPosWorld = (TG * vec4 (vertex, 1.0)).xyz;
 }

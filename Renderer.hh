@@ -35,6 +35,7 @@ public:
 
 	void ClearRenderer();
 
+	void CameraFogPos(const glm::vec3 cameraPos);
 	void CameraViewMatrix(const glm::mat4 VM, const glm::mat4 PM);
 
 private:
@@ -56,6 +57,7 @@ private:
 	GLuint TGLoc;
 	GLuint bendLoc;
 	GLuint textureLoc;
+	GLuint cameraPosLoc;
 
 	// GLuint, int = VAO, modelFaces
 	map<string, pair<GLuint, int>> modelVAOs;

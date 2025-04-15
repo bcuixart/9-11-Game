@@ -24,6 +24,7 @@ bool Renderer::InitializeRenderer()
 	TGLoc = glGetUniformLocation(shaderProgram, "TG");
 	textureLoc = glGetUniformLocation(shaderProgram, "textureSampler");
 	bendLoc = glGetUniformLocation(shaderProgram, "bend");
+	cameraPosLoc = glGetUniformLocation(shaderProgram, "cameraPos");
 
 	return lS;
 }
@@ -125,7 +126,7 @@ GLuint Renderer::LoadTextureFromFile(const string& filename, int textureType)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureType);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
@@ -160,6 +161,11 @@ GLuint Renderer::LoadTextureFromFile(const string& filename, int textureType)
 	stbi_image_free(data);
 
 	return textureData;
+}
+
+void Renderer::CameraFogPos(const glm::vec3 cameraPos) 
+{
+	glUniform3fv(cameraPosLoc, 1, &cameraPos[0]);
 }
 
 void Renderer::RenderObject(GameObject* gameObject) 
