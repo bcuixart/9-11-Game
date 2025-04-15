@@ -14,6 +14,11 @@ string GameObject::ModelName() const
 	return modelName;
 }
 
+string GameObject::ShaderName() const
+{
+	return shaderName;
+}
+
 string GameObject::TextureName() const
 {
 	return textureName;
@@ -39,9 +44,10 @@ glm::vec3 GameObject::Scale() const
 	return scale;
 }
 
-GameObject::GameObject(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
+GameObject::GameObject(const string& _mod, const string& _tex, const string& _sha, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
 {
 	modelName = _mod;
+	shaderName = _sha;
 	textureName = _tex;
 	textureType = _texType;
 

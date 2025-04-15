@@ -12,21 +12,23 @@ Renderer::Renderer()
 
 bool Renderer::InitializeRenderer() 
 {
+	/*
 	bool lS = LoadShader(SHADER_TO_LOAD, shaderProgram);
 
 	glUseProgram(shaderProgram);
 
-	projLoc = glGetUniformLocation(shaderProgram, "PM");
-	viewLoc = glGetUniformLocation(shaderProgram, "VM");
-	uvLoc = glGetAttribLocation(shaderProgram, "uv");
-	vertexLoc = glGetAttribLocation(shaderProgram, "vertex");
-	colorLoc = glGetAttribLocation(shaderProgram, "color");
-	TGLoc = glGetUniformLocation(shaderProgram, "TG");
-	textureLoc = glGetUniformLocation(shaderProgram, "textureSampler");
-	bendLoc = glGetUniformLocation(shaderProgram, "bend");
-	cameraPosLoc = glGetUniformLocation(shaderProgram, "cameraPos");
-
 	return lS;
+	*/
+
+	return true;
+}
+
+void Renderer::InitializeObjectModelShader(GameObject* gameObject) 
+{
+	string modelShader = gameObject->ShaderName();
+	if (shaderLocators.find(modelShader) != shaderLocators.end()) return;
+
+	shaderLocators[modelShader] = LoadShader(modelShader);
 }
 
 void Renderer::InitializeObjectModelVAO(GameObject* gameObject) 
@@ -93,17 +95,19 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 
+	GLuint shaderProgram = shaderLocators[gameObject->ShaderName()];
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
-	glEnableVertexAttribArray(vertexLoc);
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "vertex"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
+	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "vertex"));
 
-	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(colorLoc);
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "color"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "color"));
 
-	glVertexAttribPointer(uvLoc, 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(uvLoc);
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "uv"), 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "uv"));
 
 	glBindVertexArray(0);
 }
@@ -165,34 +169,40 @@ GLuint Renderer::LoadTextureFromFile(const string& filename, int textureType)
 
 void Renderer::CameraFogPos(const glm::vec3 cameraPos) 
 {
-	glUniform3fv(cameraPosLoc, 1, &cameraPos[0]);
+	for (auto it = shaderLocators.begin(); it != shaderLocators.end(); ++it)
+	{
+		glUseProgram(it->second);
+		glUniform3fv(glGetUniformLocation(it->second, "cameraPos"), 1, &cameraPos[0]);
+	}
 }
 
 void Renderer::RenderObject(GameObject* gameObject) 
 {
+	GLuint shaderProgram = shaderLocators[gameObject->ShaderName()];
 	glUseProgram(shaderProgram);
 
 	string modelName = gameObject->ModelName();
 	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
 	GLuint VAO = modelVAOs[modelName].first;
 
-	glUniform3fv(bendLoc, 1, &gameObject->tower_Bend[0]);
+	glUseProgram(shaderProgram);
+	glUniform3fv(glGetUniformLocation(shaderProgram, "bend"), 1, &gameObject->tower_Bend[0]);
 
 	string textureName = gameObject->TextureName();
 	if (textureLocators.find(textureName) == textureLocators.end()) return;
 
-	glUniform1i(textureLoc, 0);
+	glUniform1i(glGetUniformLocation(shaderProgram, "textureSampler"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureLocators[textureName]);
 
-	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale());
+	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale(), shaderProgram);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, modelVAOs[modelName].second * 3);
 
 	glBindVertexArray(0);
 }
 
-void Renderer::TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) 
+void Renderer::TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, GLuint shader) 
 {
 	glm::mat4 transform(1.0f);
 	transform = glm::translate(transform, position);
@@ -200,18 +210,26 @@ void Renderer::TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3
 	transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0, 1, 0));
 	transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0, 0, 1));
 	transform = glm::scale(transform, scale);
-	glUniformMatrix4fv(TGLoc, 1, GL_FALSE, &transform[0][0]);
+	glUseProgram(shader);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "TG"), 1, GL_FALSE, &transform[0][0]);
 }
 
 void Renderer::CameraViewMatrix(const glm::mat4 VM, const glm::mat4 PM) 
 {
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &VM[0][0]);
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &PM[0][0]);
+	for (auto it = shaderLocators.begin(); it != shaderLocators.end(); ++it)
+	{
+		glUseProgram(it->second);
+		glUniformMatrix4fv(glGetUniformLocation(it->second, "VM"), 1, GL_FALSE, &VM[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(it->second, "PM"), 1, GL_FALSE, &PM[0][0]);
+	}
 }
 
 void Renderer::DeleteRenderer() 
 {
-	glDeleteProgram(shaderProgram);
+	for (auto it = shaderLocators.begin(); it != shaderLocators.end(); ++it) 
+	{
+		glDeleteProgram(it->second);
+	}
 }
 
 void Renderer::ClearRenderer() 
@@ -219,8 +237,12 @@ void Renderer::ClearRenderer()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
+GLuint Renderer::LoadShader(const string& shaderToLoad)
 {
+	GLuint shader;
+	GLuint vertexShader;
+	GLuint fragmentShader;
+
 	char infoLog[512];
 	GLint success;
 
@@ -237,7 +259,7 @@ bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
 	}
 	else {
 		cout << "ERROR: Unable to open vertex shader" << endl;
-		return false;
+		return 0;
 	}
 	in_file.close();
 
@@ -250,7 +272,7 @@ bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		cout << "ERROR: Unable to compile vertex shader: " << infoLog << endl;
-		return false;
+		return 0;
 	}
 
 	tmp = "";
@@ -265,7 +287,7 @@ bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
 	}
 	else {
 		cout << "ERROR: Unable to open fragment shader" << endl;
-		return false;
+		return 0;
 	}
 	in_file.close();
 
@@ -278,23 +300,24 @@ bool Renderer::LoadShader(const string& shaderToLoad, GLuint &shader)
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 		cout << "ERROR: Unable to compile fragment shader: " << infoLog << endl;
-		return false;
+		return 0;
 	}
 
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	shader = glCreateProgram();
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
 
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	glGetProgramiv(shader, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		glGetProgramInfoLog(shader, 512, NULL, infoLog);
 		cout << "ERROR: Unable to link shader program: " << infoLog << endl;
-		return false;
+		return 0;
 	}
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	return true;
+	glUseProgram(shader);
+	return shader;
 }

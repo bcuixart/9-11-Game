@@ -12,10 +12,11 @@ class GameManager;
 
 class GameObject {
 public:
-	GameObject(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
+	GameObject(const string& _mod, const string& _tex, const string& _sha, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl);
 	virtual ~GameObject() = default;
 
 	string ModelName() const;
+	string ShaderName() const;
 	string TextureName() const;
 	int TextureType() const;
 
@@ -38,6 +39,7 @@ protected:
 private:
 
 	string modelName;
+	string shaderName;
 	string textureName;
 	int textureType;
 };

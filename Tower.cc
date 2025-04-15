@@ -1,8 +1,8 @@
 #include "Tower.hh"
 #include "GameManager.hh"
 
-Tower::Tower(const string& _mod, const string& _tex, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
-    : GameObject(_mod, _tex, _texType, _pos, _rot, _scl)
+Tower::Tower(const string& _mod, const string& _tex, const string& _sha, int _texType, glm::vec3 _pos, glm::vec3 _rot, glm::vec3 _scl)
+    : GameObject(_mod, _tex, _sha, _texType, _pos, _rot, _scl)
 {
 }
 
