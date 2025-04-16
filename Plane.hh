@@ -15,6 +15,7 @@ public:
 
 	virtual void Update();
 
+	virtual float PlaneSpeedPercentage() const;
 	virtual float StaminaPercentage() const;
 
 protected:
@@ -24,6 +25,7 @@ private:
 	const float PLANE_SPEED = 0.025;
 	const float PLANE_SPEED_RUN = 0.075;
 	const float PLANE_TURN_SPEED = 0.1;
+	const float PLANE_TURN_SPEED_RUN = 0.2;
 
 	const float PLANE_MAX_STAMINA = 10;
 	const float PLANE_STAMINA_DEPLETE_SPEED = 0.013;
@@ -31,6 +33,15 @@ private:
 
 	float stamina = PLANE_MAX_STAMINA;
 	bool staminaDepleted = false;
+
+	const float PLANE_SPEED_GAIN = 0.0005;
+	const float PLANE_SPEED_TOLERANCE = 0.0005;
+	const float PLANE_TURN_SPEED_GAIN = 0.001;
+	const float PLANE_TURN_SPEED_TOLERANCE = 0.01;
+	float currentPlaneSpeed = PLANE_SPEED;
+	float expectedPlaneSpeed = PLANE_SPEED;
+	float currentPlaneTurnSpeed = PLANE_TURN_SPEED;
+	float expectedPlaneTurnSpeed = PLANE_TURN_SPEED;
 };
 
 #endif

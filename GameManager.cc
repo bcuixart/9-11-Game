@@ -16,15 +16,20 @@ int GameManager::GetInput(int key)
 	return glfwGetKey(window, key);
 }
 
-void GameManager::PlayAudio(const string& audioName, bool loop)
+ALuint GameManager::PlayAudio(const string& audioName, bool loop)
 {
-	audioEngine->PlayAudio(audioName, loop);
+	return audioEngine->PlayAudio(audioName, loop);
 }
 
-void GameManager::PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop)
+ALuint GameManager::PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop)
 {
 	ALfloat pos[] = { position.x, position.y, position.z };
-	audioEngine->PlayAudio3D(audioName, pos, loop);
+	return audioEngine->PlayAudio3D(audioName, pos, loop);
+}
+
+void GameManager::SetAudioSpeed(ALuint source, float speed)
+{
+	audioEngine->SetAudioSpeed(source, speed);
 }
 
 void GameManager::TowerHit(GameObject* tower) 
@@ -50,7 +55,7 @@ void GameManager::Start()
 		InstantiateGameObject(initialGameObjects[i]);
 	}
 
-	PlayAudio("./Assets/Audio/Audio_Plane_Loop.ogg", true);
+	planeSound = PlayAudio("./Assets/Audio/Audio_Plane_Loop.ogg", true);
 }
 
 void GameManager::InstantiateGameObject(GameObject* gameObject) 
@@ -110,4 +115,6 @@ void GameManager::Update()
 	float cameraPos[] = { cameraPosition.x, cameraPosition.y, cameraPosition.z };
 	float cameraForward[] = { forwardVector.x, forwardVector.y, forwardVector.z };
 	audioEngine->Update(cameraPos, cameraForward);
+
+	SetAudioSpeed(planeSound, 1 + planeGameObject->PlaneSpeedPercentage() * 0.25);
 }

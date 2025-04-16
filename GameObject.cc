@@ -9,6 +9,11 @@ void GameObject::OtherTowerHit()
 {
 }
 
+float GameObject::PlaneSpeedPercentage() const
+{
+	return 0;
+}
+
 float GameObject::StaminaPercentage() const
 {
 	return 0;

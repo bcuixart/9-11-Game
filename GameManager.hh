@@ -32,8 +32,10 @@ public:
 
 	int RNG();
 
-	void PlayAudio(const string& audioName, bool loop);
-	void PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop);
+	ALuint PlayAudio(const string& audioName, bool loop);
+	ALuint PlayAudio3D(const string& audioName, const glm::vec3 position, bool loop);
+
+	void SetAudioSpeed(ALuint source, float speed);
 
 	GameObject* planeGameObject = new Plane("./Assets/Models/Plane_Interior.obj", "./Assets/Textures/Plane_Interior.png", "./Assets/Shaders/basicShader", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
 	GameObject* planeGameObjectOutside = new Plane("./Assets/Models/Plane.obj", "./Assets/Textures/Plane.png", "./Assets/Shaders/basicShader", GL_MIRRORED_REPEAT, glm::vec3(0, 30, -100), glm::vec3(0, -90, 0), glm::vec3(1));
@@ -67,6 +69,8 @@ private:
 	const float CUTSCENE_CAMERA_DISTANCE = 20;
 	float cutscene_Left_Time = 0;
 	glm::vec3 cutsceneLookAt;
+
+	ALuint planeSound;
 };
 
 #endif

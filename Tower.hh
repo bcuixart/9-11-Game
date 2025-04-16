@@ -41,6 +41,8 @@ private:
 
 	const float HITBOXSIZE = 6.3;
 
+	glm::vec3 tower_Bend_Old = glm::vec3(0, 0, 0);
+
 	bool isPlaneInTower(glm::vec3 planePosition);
 
 	void PlayRandomSound(const string* sounds);
@@ -59,6 +61,22 @@ private:
 		"./Assets/Audio/Audio_Tower_Thud003.ogg",
 		"./Assets/Audio/Audio_Tower_Thud004.ogg",
 		"./Assets/Audio/Audio_Tower_Thud005.ogg"
+	};
+
+	const string bendSounds[5] = {
+		"./Assets/Audio/Audio_Tower_Bend001.ogg",
+		"./Assets/Audio/Audio_Tower_Bend002.ogg",
+		"./Assets/Audio/Audio_Tower_Bend003.ogg",
+		"./Assets/Audio/Audio_Tower_Bend004.ogg",
+		"./Assets/Audio/Audio_Tower_Bend005.ogg"
+	};
+
+	const string retractSounds[5] = {
+		"./Assets/Audio/Audio_Tower_Retract001.ogg",
+		"./Assets/Audio/Audio_Tower_Retract002.ogg",
+		"./Assets/Audio/Audio_Tower_Retract003.ogg",
+		"./Assets/Audio/Audio_Tower_Retract004.ogg",
+		"./Assets/Audio/Audio_Tower_Retract005.ogg"
 	};
 };
 

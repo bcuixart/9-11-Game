@@ -51,7 +51,7 @@ void AudioEngine::CleanUpSources()
     }
 }
 
-void AudioEngine::PlayAudio(const string& audioName, bool loop)
+ALuint AudioEngine::PlayAudio(const string& audioName, bool loop)
 {
     auto it = audioClips.find(audioName);
     if (it == audioClips.end()) {
@@ -70,9 +70,11 @@ void AudioEngine::PlayAudio(const string& audioName, bool loop)
     alSourcePlay(source);
 
     activeSources.push_back(source);
+
+    return source;
 }
 
-void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position, bool loop)
+ALuint AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position, bool loop)
 {
     auto it = audioClips.find(audioName);
     if (it == audioClips.end()) {
@@ -97,6 +99,8 @@ void AudioEngine::PlayAudio3D(const string& audioName, const ALfloat* position, 
     alSourcePlay(source);
 
     activeSources.push_back(source);
+
+    return source;
 }
 
 AudioEngine::AudioClip AudioEngine::LoadOGG(const char* filename)
@@ -118,6 +122,11 @@ AudioEngine::AudioClip AudioEngine::LoadOGG(const char* filename)
     free(output);
 
     return { buffer, format, sampleRate };
+}
+
+void AudioEngine::SetAudioSpeed(ALuint source, float speed) 
+{
+    alSourcef(source, AL_PITCH, speed);
 }
 
 bool AudioEngine::InitializeAudioEngine()

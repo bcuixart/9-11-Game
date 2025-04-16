@@ -6,6 +6,11 @@ Plane::Plane(const string& _mod, const string& _tex, const string& _sha, int _te
 {
 }
 
+float Plane::PlaneSpeedPercentage() const
+{
+    return (currentPlaneSpeed - PLANE_SPEED) / (PLANE_SPEED_RUN - PLANE_SPEED);
+}
+
 float Plane::StaminaPercentage() const
 {
     return stamina / PLANE_MAX_STAMINA;
@@ -13,7 +18,8 @@ float Plane::StaminaPercentage() const
 
 void Plane::Update()
 {
-    float currentSpeed = PLANE_SPEED;
+    expectedPlaneSpeed = PLANE_SPEED;
+    expectedPlaneTurnSpeed = PLANE_TURN_SPEED;
 
     bool inCutscene = GameManager::instance->inCutscene;
 
@@ -30,16 +36,29 @@ void Plane::Update()
             if (GameManager::instance->GetInput(GLFW_KEY_SPACE) == GLFW_PRESS)
             {
                 stamina -= PLANE_STAMINA_DEPLETE_SPEED;
-                currentSpeed = PLANE_SPEED_RUN;
+                expectedPlaneSpeed = PLANE_SPEED_RUN;
+                expectedPlaneTurnSpeed = PLANE_TURN_SPEED_RUN;
                 if (stamina <= 0) {
                     stamina = 0;
                     staminaDepleted = true;
-                    currentSpeed = PLANE_SPEED;
+                    expectedPlaneSpeed = PLANE_SPEED;
+                    expectedPlaneTurnSpeed = PLANE_TURN_SPEED;
                 }
             }
         }
     }
+    
+    if (abs(expectedPlaneSpeed - currentPlaneSpeed) > PLANE_SPEED_TOLERANCE) 
+    {
+        if (expectedPlaneSpeed > currentPlaneSpeed) currentPlaneSpeed += PLANE_SPEED_GAIN;
+        else currentPlaneSpeed -= PLANE_SPEED_GAIN;
+    }
 
+    if (abs(expectedPlaneTurnSpeed - currentPlaneTurnSpeed) > PLANE_TURN_SPEED_TOLERANCE)
+    {
+        if (expectedPlaneTurnSpeed > currentPlaneTurnSpeed) currentPlaneTurnSpeed += PLANE_TURN_SPEED_GAIN;
+        else currentPlaneTurnSpeed -= PLANE_TURN_SPEED_GAIN;
+    }
 
     float rotacioRadians = glm::radians(rotation.y);
 
@@ -47,15 +66,15 @@ void Plane::Update()
         cos(rotacioRadians),
         0,
         -sin(rotacioRadians)
-    ) * currentSpeed;
+    ) * currentPlaneSpeed;
 
     if (inCutscene) return;
 
     if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS) {
-        rotation.y -= PLANE_TURN_SPEED;
+        rotation.y -= currentPlaneTurnSpeed;
     }
 
     if (GameManager::instance->GetInput(GLFW_KEY_A) == GLFW_PRESS) {
-        rotation.y += PLANE_TURN_SPEED;
+        rotation.y += currentPlaneTurnSpeed;
     }
 }

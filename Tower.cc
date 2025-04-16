@@ -107,4 +107,18 @@ void Tower::Update()
     }
 
     position.y = TOWER_HEIGHT_JUMP_HEIGHT * tower_Height_Lerp * (tower_Height_Lerp - 1) * (tower_Height_Lerp - .8);
+
+    if (alive && tower_Expected_Bend != tower_Bend_Old) 
+    {
+        if (tower_Expected_Bend == glm::vec3(0, 0, 0))
+        {
+            PlayRandomSound(retractSounds);
+        }
+        else if (tower_Bend_Old == glm::vec3(0, 0, 0) or glm::distance(tower_Expected_Bend, tower_Bend_Old) > 2)
+        {
+            PlayRandomSound(bendSounds);
+        }
+    }
+
+    tower_Bend_Old = tower_Expected_Bend;
 }
