@@ -1,6 +1,8 @@
 #ifndef TOWER_HH
 #define TOWER_HH
 
+#define FRAMERATESCALEFATOR 300
+
 #include <glm/vec3.hpp>
 #include <string>
 #include <iostream>
@@ -26,18 +28,18 @@ private:
 	bool canMove = true;
 	bool canBend = false;
 
-	const float TOWER_MOVE_SPEED = 0.0025;
+	const float TOWER_MOVE_SPEED = 0.00215 * FRAMERATESCALEFATOR;
 	//const float TOWER_MOVE_SPEED = 0.00025;
 	const float TOWER_MOVE_DISTANCE = 40;
-	const float TOWER_HEIGHT_INCREMENT = 0.005;
+	const float TOWER_HEIGHT_INCREMENT = 0.005 * FRAMERATESCALEFATOR;
 	const float TOWER_HEIGHT_JUMP_HEIGHT = 5;
 	float tower_Height_Lerp = 0;
 	bool playedThudSound = false;
 
 	const float TOWER_BEND_MAGNITUDE_MAX = 12;
-	const float TOWER_BEND_SPEED = 0.16;
+	const float TOWER_BEND_SPEED = 0.16 * FRAMERATESCALEFATOR;
 	const float TOWER_BEND_DISTANCE = 35;
-	const float TOWER_BEND_SNAP = 0.1;
+	const float TOWER_BEND_SNAP = .5;
 
 	const float HITBOXSIZE = 6.3;
 

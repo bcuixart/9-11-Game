@@ -24,7 +24,9 @@ public:
 	static GameManager* instance;
 
 	void Start();
-	void Update();
+	void Update(float _dT);
+
+	float DeltaTime();
 
 	int GetInput(int key);
 
@@ -73,7 +75,9 @@ private:
 		new StaminaBar("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Bar.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.945, 0), glm::vec3(0, 0, 0), glm::vec3(.4 * 0.896484375, .2 * 0.400390625, 0))
 	};
 
-	const float CUTSCENE_DURATION = 1000;
+	float deltaTime;
+
+	const float CUTSCENE_DURATION = 4;
 	const float CUTSCENE_CAMERA_DISTANCE = 20;
 	float cutscene_Left_Time = 0;
 	glm::vec3 cutsceneLookAt;

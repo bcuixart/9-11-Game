@@ -1,14 +1,21 @@
 #include "main.hh"
 
 using namespace std;
+using namespace chrono;
 
 void framebufferResizeCallback(GLFWwindow* window, int frameBufferWidth, int frameBufferHeight) 
 {
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 }
 
-int main() 
+int main(int argc, char* argv[]) 
 {
+	if (argc == 2) {
+		if (strcmp(argv[1], "-f") == 0) {
+			showFPS = true;
+		}
+	}
+
 	// Init GLFW
 	glfwInit();
 
@@ -60,16 +67,32 @@ int main()
 	gameManager->Start();
 
 	glClearColor(0.5, 0.7, 1.0, 1.0);
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window)) 
+	{
+		auto frameStart = high_resolution_clock::now();
+
 		// Input
 		glfwPollEvents();
 
 		// Update
-		gameManager->Update();
+		gameManager->Update(deltaTime);
 
 		// End drawing
 		glfwSwapBuffers(window);
 		glFlush();
+
+		auto frameEnd = high_resolution_clock::now();
+		deltaTime = duration<float>(frameEnd - frameStart).count();
+
+		if (deltaTime < DESIRED_FRAME_TIME) {
+			std::this_thread::sleep_for(duration<float>(DESIRED_FRAME_TIME - deltaTime));
+
+			frameEnd = high_resolution_clock::now();
+			deltaTime = duration<float>(frameEnd - frameStart).count();
+		}
+
+		fps = 1.0f / deltaTime;
+		if (showFPS) cerr << fps << " FPS" << endl;
 	}
 
 	glfwDestroyWindow(window);

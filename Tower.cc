@@ -33,6 +33,8 @@ void Tower::PlayRandomSound(const string* sounds)
 
 void Tower::Update()
 {
+    float deltaTime = GameManager::instance->DeltaTime();
+
     GameObject* plane = GameManager::instance->planeGameObject;
 
     glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(plane->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -49,10 +51,10 @@ void Tower::Update()
     // MOVE TOWER
     if (alive && !inCutscene) {
         if (canMove && distance < TOWER_MOVE_DISTANCE) {
-            position += planeToTowerVector * TOWER_MOVE_SPEED;
+            position += planeToTowerVector * TOWER_MOVE_SPEED * deltaTime;
             
             if (tower_Height_Lerp == 0) PlayRandomSound(jumpSounds);
-            tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
+            tower_Height_Lerp += TOWER_HEIGHT_INCREMENT * deltaTime;
             if (!playedThudSound && tower_Height_Lerp > 0.8) {
                 playedThudSound = true;
                 PlayRandomSound(thudSounds);
@@ -63,7 +65,7 @@ void Tower::Update()
             }
         }
         else {
-            if (tower_Height_Lerp > 0) tower_Height_Lerp += TOWER_HEIGHT_INCREMENT;
+            if (tower_Height_Lerp > 0) tower_Height_Lerp += TOWER_HEIGHT_INCREMENT * deltaTime;
             if (!playedThudSound && tower_Height_Lerp > 0.8) {
                 playedThudSound = true;
                 PlayRandomSound(thudSounds);
@@ -75,7 +77,7 @@ void Tower::Update()
         }
     }
     else if (!alive) {
-        tower_Height_Lerp -= TOWER_HEIGHT_INCREMENT;
+        tower_Height_Lerp -= TOWER_HEIGHT_INCREMENT * deltaTime;
     }
 
     // BEND TOWER
@@ -94,10 +96,10 @@ void Tower::Update()
 
     tower_Bend =
         glm::vec3(abs(tower_Bend.x - tower_Expected_Bend.x) < TOWER_BEND_SNAP ? tower_Expected_Bend.x :
-            (tower_Bend.x > tower_Expected_Bend.x ? tower_Bend.x - TOWER_BEND_SPEED : tower_Bend.x + TOWER_BEND_SPEED),
+            (tower_Bend.x > tower_Expected_Bend.x ? tower_Bend.x - TOWER_BEND_SPEED * deltaTime : tower_Bend.x + TOWER_BEND_SPEED * deltaTime),
             0,
             abs(tower_Bend.z - tower_Expected_Bend.z) < TOWER_BEND_SNAP ? tower_Expected_Bend.z :
-            (tower_Bend.z > tower_Expected_Bend.z ? tower_Bend.z - TOWER_BEND_SPEED : tower_Bend.z + TOWER_BEND_SPEED));
+            (tower_Bend.z > tower_Expected_Bend.z ? tower_Bend.z - TOWER_BEND_SPEED * deltaTime : tower_Bend.z + TOWER_BEND_SPEED * deltaTime));
 
 
     if (alive && !inCutscene && isPlaneInTower(plane->Position())) {

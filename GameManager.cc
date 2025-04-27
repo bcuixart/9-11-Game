@@ -95,8 +95,15 @@ int GameManager::RNG()
 	return std::rand();
 }
 
-void GameManager::Update() 
+float GameManager::DeltaTime() 
 {
+	return deltaTime;
+}
+
+void GameManager::Update(float _dT)
+{
+	deltaTime = _dT;
+
 	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
 	renderer->StartFrame();
 	renderer->ClearRenderer();
@@ -120,7 +127,7 @@ void GameManager::Update()
 
 	glm::vec3 cameraPosition;
 	if (inCutscene) {
-		--cutscene_Left_Time;
+		cutscene_Left_Time -= deltaTime;
 
 		if (cutscene_Left_Time < 0) {
 			inCutscene = false;
@@ -135,7 +142,8 @@ void GameManager::Update()
 		cameraPosition = cutscenePos;
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(-20, -90, 0));
 	}
-	else {
+	else 
+	{
 		camera->MoveCamera(planeGameObject->Position());
 		cameraPosition = planeGameObject->Position();
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));

@@ -18,6 +18,8 @@ float Plane::StaminaPercentage() const
 
 void Plane::Update()
 {
+    float deltaTime = GameManager::instance->DeltaTime();
+
     expectedPlaneSpeed = PLANE_SPEED;
     expectedPlaneTurnSpeed = PLANE_TURN_SPEED;
 
@@ -26,7 +28,7 @@ void Plane::Update()
     if (!inCutscene) {
         if (staminaDepleted)
         {
-            stamina += PLANE_STAMINA_GAIN_SPEED;
+            stamina += PLANE_STAMINA_GAIN_SPEED * deltaTime;
             if (stamina >= PLANE_MAX_STAMINA) {
                 stamina = PLANE_MAX_STAMINA;
                 staminaDepleted = false;
@@ -35,7 +37,7 @@ void Plane::Update()
         else {
             if (GameManager::instance->GetInput(GLFW_KEY_SPACE) == GLFW_PRESS)
             {
-                stamina -= PLANE_STAMINA_DEPLETE_SPEED;
+                stamina -= PLANE_STAMINA_DEPLETE_SPEED * deltaTime;
                 expectedPlaneSpeed = PLANE_SPEED_RUN;
                 expectedPlaneTurnSpeed = PLANE_TURN_SPEED_RUN;
                 if (stamina <= 0) {
@@ -50,14 +52,14 @@ void Plane::Update()
     
     if (abs(expectedPlaneSpeed - currentPlaneSpeed) > PLANE_SPEED_TOLERANCE) 
     {
-        if (expectedPlaneSpeed > currentPlaneSpeed) currentPlaneSpeed += PLANE_SPEED_GAIN;
-        else currentPlaneSpeed -= PLANE_SPEED_GAIN;
+        if (expectedPlaneSpeed > currentPlaneSpeed) currentPlaneSpeed += PLANE_SPEED_GAIN * deltaTime;
+        else currentPlaneSpeed -= PLANE_SPEED_GAIN * deltaTime;
     }
 
     if (abs(expectedPlaneTurnSpeed - currentPlaneTurnSpeed) > PLANE_TURN_SPEED_TOLERANCE)
     {
-        if (expectedPlaneTurnSpeed > currentPlaneTurnSpeed) currentPlaneTurnSpeed += PLANE_TURN_SPEED_GAIN;
-        else currentPlaneTurnSpeed -= PLANE_TURN_SPEED_GAIN;
+        if (expectedPlaneTurnSpeed > currentPlaneTurnSpeed) currentPlaneTurnSpeed += PLANE_TURN_SPEED_GAIN * deltaTime;
+        else currentPlaneTurnSpeed -= PLANE_TURN_SPEED_GAIN * deltaTime;
     }
 
     float rotacioRadians = glm::radians(rotation.y);
@@ -66,15 +68,15 @@ void Plane::Update()
         cos(rotacioRadians),
         0,
         -sin(rotacioRadians)
-    ) * currentPlaneSpeed;
+    ) * currentPlaneSpeed * deltaTime;
 
     if (inCutscene) return;
 
     if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS) {
-        rotation.y -= currentPlaneTurnSpeed;
+        rotation.y -= currentPlaneTurnSpeed * deltaTime;
     }
 
     if (GameManager::instance->GetInput(GLFW_KEY_A) == GLFW_PRESS) {
-        rotation.y += currentPlaneTurnSpeed;
+        rotation.y += currentPlaneTurnSpeed * deltaTime;
     }
 }
