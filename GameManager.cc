@@ -132,6 +132,9 @@ void GameManager::Update(float _dT)
 
 		if (cutscene_Left_Time < 0) {
 			inCutscene = false;
+
+			++towersTakenDown;
+			if (towersTakenDown == 2) PlayAudio("./Assets/Audio/Audio_Victory.ogg", true);
 		}
 
 		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));

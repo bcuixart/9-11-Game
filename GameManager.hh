@@ -67,7 +67,8 @@ private:
 		towerSGameObject,
 		planeGameObject,
 		planeGameObjectOutside,
-		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1))
+		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1)),
+		new GameObject("./Assets/Models/UI_Quad.obj", "./Assets/Textures/Texture_Cloud.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(20, 40, 200), glm::vec3(0, 180, 0), glm::vec3(12, 6, 1))
 	};
 
 	vector<GameObject*> initialUIObjects = {		
@@ -77,6 +78,8 @@ private:
 
 	float deltaTime;
 	int frameCount = 0;
+
+	int towersTakenDown = 0;
 
 	const float CUTSCENE_DURATION = 4;
 	const float CUTSCENE_CAMERA_DISTANCE = 20;
