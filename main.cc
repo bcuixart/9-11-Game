@@ -45,7 +45,7 @@ int main()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	Renderer* renderer = new Renderer();
-	if (!renderer->InitializeRenderer()) {
+	if (!renderer->InitializeRenderer(WIDTH, HEIGHT)) {
 		cout << "ERROR: Renderer failed to initialize" << endl;
 		glfwTerminate();
 	}

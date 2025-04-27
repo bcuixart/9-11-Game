@@ -24,13 +24,19 @@ class Renderer {
 public:
 	Renderer();
 
-	bool InitializeRenderer();
+	bool InitializeRenderer(int width, int height);
 	void DeleteRenderer();
 
 	void InitializeObjectModelShader(GameObject* gameObject);
 	void InitializeObjectModelVAO(GameObject* gameObject);
 	void InitializeObjectModelTexture(GameObject* gameObject);
+
+	void StartFrame();
+	void StartUIRender();
+	void EndFrame();
+
 	void RenderObject(GameObject* gameObject);
+	void RenderScreen(GameObject* screen);
 
 	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, GLuint shader);
 
@@ -41,27 +47,18 @@ public:
 
 private:
 	GLuint LoadShader(const string& shaderToLoad);
-
-	const string SHADER_TO_LOAD = "./Assets/Shaders/basicShader";
 	
 	GLuint LoadTextureFromFile(const string& filename, int textureType);
-
-	/*
-	GLuint vertexLoc;
-	GLuint colorLoc;
-	GLuint uvLoc;
-	GLuint projLoc;
-	GLuint viewLoc;
-	GLuint TGLoc;
-	GLuint bendLoc;
-	GLuint textureLoc;
-	GLuint cameraPosLoc;
-	*/
 
 	// GLuint, int = VAO, modelFaces
 	map<string, pair<GLuint, int>> modelVAOs;
 	map<string, GLuint> shaderLocators;
 	map<string, GLuint> textureLocators;
+
+	GLuint framebuffer;
+	GLuint framebufferColorTexture;
+	GLuint framebufferNormalTexture;
+	GLuint framebufferDepth;
 };
 
 #endif

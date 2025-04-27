@@ -10,15 +10,36 @@ Renderer::Renderer()
 {
 }
 
-bool Renderer::InitializeRenderer() 
+bool Renderer::InitializeRenderer(int width, int height)
 {
-	/*
-	bool lS = LoadShader(SHADER_TO_LOAD, shaderProgram);
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-	glUseProgram(shaderProgram);
+	glGenTextures(1, &framebufferColorTexture);
+	glBindTexture(GL_TEXTURE_2D, framebufferColorTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferColorTexture, 0);
 
-	return lS;
-	*/
+	glGenTextures(1, &framebufferNormalTexture);
+	glBindTexture(GL_TEXTURE_2D, framebufferNormalTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, framebufferNormalTexture, 0);
+
+	glGenRenderbuffers(1, &framebufferDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, framebufferDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, framebufferDepth);
+
+	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		return false;
+	}
 
 	return true;
 }
@@ -66,6 +87,15 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 				};
 			}
 
+			glm::vec3 normal = { 1.0f, 1.0f, 1.0f };
+			if (!attributes.normals.empty()) {
+				normal = {
+					attributes.normals[3 * index.normal_index],
+					attributes.normals[3 * index.normal_index + 1],
+					attributes.normals[3 * index.normal_index + 2]
+				};
+			}
+
 			glm::vec2 texcoord = { 0.0f, 0.0f };
 			if (index.texcoord_index >= 0) {
 				texcoord = {
@@ -77,6 +107,9 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 			vertices.push_back(pos.x);
 			vertices.push_back(pos.y);
 			vertices.push_back(pos.z);
+			vertices.push_back(normal.x);
+			vertices.push_back(normal.y);
+			vertices.push_back(normal.z);
 			vertices.push_back(color.x);
 			vertices.push_back(color.y);
 			vertices.push_back(color.z);
@@ -87,10 +120,10 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 
 	glGenVertexArrays(1, &modelVAOs[modelName].first);
 	glBindVertexArray(modelVAOs[modelName].first);
-	modelVAOs[modelName].second = int(vertices.size() / 8);
+	modelVAOs[modelName].second = int(vertices.size() / 11);
 
-	int vertexSize = 8 * sizeof(float);
-	int vertexCount = int(vertices.size()) / 8;
+	int vertexSize = 11 * sizeof(float);
+	//int vertexCount = int(vertices.size()) / 11;
 
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
@@ -103,10 +136,13 @@ void Renderer::InitializeObjectModelVAO(GameObject* gameObject)
 	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "vertex"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)0);
 	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "vertex"));
 
-	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "color"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "normal"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "normal"));
+
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "color"), 3, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "color"));
 
-	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "uv"), 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(glGetAttribLocation(shaderProgram, "uv"), 2, GL_FLOAT, GL_FALSE, vertexSize, (void*)(9 * sizeof(float)));
 	glEnableVertexAttribArray(glGetAttribLocation(shaderProgram, "uv"));
 
 	glBindVertexArray(0);
@@ -176,26 +212,82 @@ void Renderer::CameraFogPos(const glm::vec3 cameraPos)
 	}
 }
 
+void Renderer::ClearRenderer()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void Renderer::StartFrame() 
+{
+	glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+}
+
+void Renderer::StartUIRender() 
+{
+	glDisable(GL_DEPTH_TEST);
+}
+
+void Renderer::EndFrame()
+{
+	glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer::RenderObject(GameObject* gameObject) 
 {
-	GLuint shaderProgram = shaderLocators[gameObject->ShaderName()];
+	string shaderName = gameObject->ShaderName();
+	GLuint shaderProgram = shaderLocators[shaderName];
 	glUseProgram(shaderProgram);
 
 	string modelName = gameObject->ModelName();
-	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
+	if (modelVAOs.find(modelName) == modelVAOs.end()) {
+		cerr << "VAO NOT FOUND" << endl;
+		return;
+	}
 	GLuint VAO = modelVAOs[modelName].first;
 
-	glUseProgram(shaderProgram);
 	glUniform3fv(glGetUniformLocation(shaderProgram, "bend"), 1, &gameObject->tower_Bend[0]);
 
 	string textureName = gameObject->TextureName();
-	if (textureLocators.find(textureName) == textureLocators.end()) return;
+	if (textureLocators.find(textureName) == textureLocators.end()) {
+		cerr << "TEXTURE NOT FOUND" << endl;
+		return;
+	}
 
 	glUniform1i(glGetUniformLocation(shaderProgram, "textureSampler"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureLocators[textureName]);
 
 	TransformObject(gameObject->Position(), gameObject->Rotation(), gameObject->Scale(), shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, modelVAOs[modelName].second * 3);
+
+	glBindVertexArray(0);
+}
+
+void Renderer::RenderScreen(GameObject* screen) 
+{
+	string shaderName = screen->ShaderName();
+	GLuint shaderProgram = shaderLocators[shaderName];
+	glUseProgram(shaderProgram);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, framebufferColorTexture);
+	glUniform1i(glGetUniformLocation(shaderProgram, "screenTexture"), 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, framebufferDepth);
+	glUniform1i(glGetUniformLocation(shaderProgram, "depthTexture"), 1);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, framebufferNormalTexture);
+	glUniform1i(glGetUniformLocation(shaderProgram, "normalTexture"), 2);
+
+	string modelName = screen->ModelName();
+	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
+	GLuint VAO = modelVAOs[modelName].first;
+
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, modelVAOs[modelName].second * 3);
 
@@ -230,11 +322,6 @@ void Renderer::DeleteRenderer()
 	{
 		glDeleteProgram(it->second);
 	}
-}
-
-void Renderer::ClearRenderer() 
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 GLuint Renderer::LoadShader(const string& shaderToLoad)

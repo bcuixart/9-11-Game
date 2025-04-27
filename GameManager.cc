@@ -50,9 +50,18 @@ void GameManager::Start()
 
 	camera = new Camera(glm::vec3(0,100,50), glm::vec3(-45,0,0), 45, 1, 0.1, 1000000);
 
-	for (int i = 0; i < initialGameObjects.size(); ++i) 
+	InstantiateScreen(screenQuadObject);
+
+	int sz = (int)initialGameObjects.size();
+	for (int i = 0; i < sz; ++i)
 	{
 		InstantiateGameObject(initialGameObjects[i]);
+	}
+
+	int szUI = (int)initialUIObjects.size();
+	for (int i = 0; i < szUI; ++i)
+	{
+		InstantiateUIObject(initialUIObjects[i]);
 	}
 
 	planeSound = PlayAudio("./Assets/Audio/Audio_Plane_Loop.ogg", true);
@@ -66,6 +75,21 @@ void GameManager::InstantiateGameObject(GameObject* gameObject)
 	renderer->InitializeObjectModelTexture(gameObject);
 }
 
+void GameManager::InstantiateUIObject(GameObject* gameObject)
+{
+	currentUIObjects.push_back(gameObject);
+	renderer->InitializeObjectModelShader(gameObject);
+	renderer->InitializeObjectModelVAO(gameObject);
+	renderer->InitializeObjectModelTexture(gameObject);
+}
+
+void GameManager::InstantiateScreen(GameObject* screen) 
+{
+	renderer->InitializeObjectModelShader(screen);
+	renderer->InitializeObjectModelVAO(screen);
+	renderer->InitializeObjectModelTexture(screen);
+}
+
 int GameManager::RNG() 
 {
 	return std::rand();
@@ -73,14 +97,24 @@ int GameManager::RNG()
 
 void GameManager::Update() 
 {
-	renderer->ClearRenderer();
 	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
+	renderer->StartFrame();
+	renderer->ClearRenderer();
 
 	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
 		(*it)->Update();
 	}
 
+	for (auto it = currentUIObjects.begin(); it != currentUIObjects.end(); ++it) {
+		(*it)->Update();
+	}
+
 	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
+		renderer->RenderObject(*it);
+	}
+
+	renderer->StartUIRender();
+	for (auto it = currentUIObjects.begin(); it != currentUIObjects.end(); ++it) {
 		renderer->RenderObject(*it);
 	}
 
@@ -117,4 +151,9 @@ void GameManager::Update()
 	audioEngine->Update(cameraPos, cameraForward);
 
 	SetAudioSpeed(planeSound, 1 + planeGameObject->PlaneSpeedPercentage() * 0.25);
+
+	renderer->EndFrame();
+	renderer->ClearRenderer();
+
+	renderer->RenderScreen(screenQuadObject);
 }

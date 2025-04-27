@@ -29,6 +29,7 @@ public:
 	int GetInput(int key);
 
 	void InstantiateGameObject(GameObject* gameObject);
+	void InstantiateUIObject(GameObject* gameObject);
 
 	int RNG();
 
@@ -51,7 +52,11 @@ private:
 	GLFWwindow* window;
 
 	list<GameObject*> currentGameObjects;
+	list<GameObject*> currentUIObjects;
 
+	void InstantiateScreen(GameObject* screen);
+
+	GameObject* screenQuadObject = new GameObject("./Assets/Models/UI_Screen.obj", "./Assets/Textures/UI_Stamina_Bar.png", "./Assets/Shaders/screenShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(.5, .5, 0));
 	GameObject* towerNGameObject = new Tower("./Assets/Models/Tower_N.obj", "./Assets/Textures/Texture_Tower.jpg", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(-4, 0, -3.15), glm::vec3(0), glm::vec3(1));
 	GameObject* towerSGameObject = new Tower("./Assets/Models/Tower_S.obj", "./Assets/Textures/Texture_Tower.jpg", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(4, 0, 3.15), glm::vec3(0), glm::vec3(1));
 
@@ -60,9 +65,12 @@ private:
 		towerSGameObject,
 		planeGameObject,
 		planeGameObjectOutside,
-		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1)),
-		new GameObject("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Background.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.9, -.5), glm::vec3(0, 0, 0), glm::vec3(.4, .2, 0)),
-		new StaminaBar("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Bar.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.945, -1), glm::vec3(0, 0, 0), glm::vec3(.4 * 0.896484375, .2 * 0.400390625, 0))
+		new GameObject("./Assets/Models/CityGround.obj", "./Assets/Textures/Texture_City.png", "./Assets/Shaders/basicShader", GL_REPEAT, glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1))
+	};
+
+	vector<GameObject*> initialUIObjects = {		
+		new GameObject("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Background.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.9, 0.5), glm::vec3(0, 0, 0), glm::vec3(.4, .2, 0)),
+		new StaminaBar("./Assets/Models/UI_Quad.obj", "./Assets/Textures/UI_Stamina_Bar.png", "./Assets/Shaders/uiShader", GL_REPEAT, glm::vec3(0.8, 0.945, 0), glm::vec3(0, 0, 0), glm::vec3(.4 * 0.896484375, .2 * 0.400390625, 0))
 	};
 
 	const float CUTSCENE_DURATION = 1000;
