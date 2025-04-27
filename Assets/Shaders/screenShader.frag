@@ -9,12 +9,16 @@ uniform sampler2D screenTexture;
 uniform sampler2D depthTexture;
 uniform sampler2D normalTexture;
 
+uniform int frameCount;
+uniform int seedChange = 12;
+
 uniform float outlineThickness = 1.0;
 uniform float outlineSensitivity = 1.0;
 uniform float crayonEffect = 0.5;
 
 float rand(vec2 co) {
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+    float seedVariation = float(frameCount / seedChange);
+    return fract(sin(dot(co + seedVariation, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float getEdgeFactor(vec2 uv, float thickness, float sensitivity) {
@@ -48,12 +52,14 @@ float getEdgeFactor(vec2 uv, float thickness, float sensitivity) {
 
 void main() 
 {
+    float frameSeed = float(frameCount / seedChange);
+
     // Primer apliquem el jitter al sampleig de la textura original
-    vec2 jitter = vec2(rand(vUV), rand(vUV + 0.5)) * 0.005;
+    vec2 jitter = vec2(rand(vUV + frameSeed), rand(vUV + 0.5 + frameSeed)) * 0.005;
     vec4 texColor = texture(screenTexture, vUV + jitter);
     
     // Efecte de taques blanques
-    float noise = rand(vUV * 20.0);
+    float noise = rand(vUV * 20.0 + frameSeed);
     float taca = smoothstep(0.4, 0.0, noise) * crayonEffect;
     
     // Apliquem les taques al color amb jitter
@@ -65,7 +71,7 @@ void main()
     
     // Detecció de contorns
     float edge = getEdgeFactor(vUV, outlineThickness, outlineSensitivity);
-    edge *= smoothstep(0.3, 0.7, rand(vUV * 50.0));
+    edge *= smoothstep(0.3, 0.7, rand(vUV * 50.0 + frameSeed));
     
     // Apliquem l'outline al resultat combinat
     fragColor = vec4(mix(colorAmbTaques, vec3(0.0), edge), 1.0);

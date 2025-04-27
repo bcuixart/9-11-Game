@@ -72,11 +72,13 @@ void Plane::Update()
 
     if (inCutscene) return;
 
-    if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS) {
+    if (GameManager::instance->GetInput(GLFW_KEY_D) == GLFW_PRESS or
+        GameManager::instance->GetInput(GLFW_KEY_RIGHT) == GLFW_PRESS) {
         rotation.y -= currentPlaneTurnSpeed * deltaTime;
     }
 
-    if (GameManager::instance->GetInput(GLFW_KEY_A) == GLFW_PRESS) {
+    if (GameManager::instance->GetInput(GLFW_KEY_A) == GLFW_PRESS or
+        GameManager::instance->GetInput(GLFW_KEY_LEFT) == GLFW_PRESS) {
         rotation.y += currentPlaneTurnSpeed * deltaTime;
     }
 }

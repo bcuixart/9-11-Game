@@ -103,6 +103,7 @@ float GameManager::DeltaTime()
 void GameManager::Update(float _dT)
 {
 	deltaTime = _dT;
+	++frameCount;
 
 	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
 	renderer->StartFrame();
@@ -163,5 +164,5 @@ void GameManager::Update(float _dT)
 	renderer->EndFrame();
 	renderer->ClearRenderer();
 
-	renderer->RenderScreen(screenQuadObject);
+	renderer->RenderScreen(screenQuadObject, frameCount);
 }

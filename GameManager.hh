@@ -76,6 +76,7 @@ private:
 	};
 
 	float deltaTime;
+	int frameCount = 0;
 
 	const float CUTSCENE_DURATION = 4;
 	const float CUTSCENE_CAMERA_DISTANCE = 20;

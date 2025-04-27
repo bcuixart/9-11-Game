@@ -36,7 +36,7 @@ public:
 	void EndFrame();
 
 	void RenderObject(GameObject* gameObject);
-	void RenderScreen(GameObject* screen);
+	void RenderScreen(GameObject* screen, int frameCount);
 
 	void TransformObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, GLuint shader);
 

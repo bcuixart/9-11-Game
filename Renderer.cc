@@ -266,7 +266,7 @@ void Renderer::RenderObject(GameObject* gameObject)
 	glBindVertexArray(0);
 }
 
-void Renderer::RenderScreen(GameObject* screen) 
+void Renderer::RenderScreen(GameObject* screen, int frameCount) 
 {
 	string shaderName = screen->ShaderName();
 	GLuint shaderProgram = shaderLocators[shaderName];
@@ -283,6 +283,8 @@ void Renderer::RenderScreen(GameObject* screen)
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, framebufferNormalTexture);
 	glUniform1i(glGetUniformLocation(shaderProgram, "normalTexture"), 2);
+
+	glUniform1i(glGetUniformLocation(shaderProgram, "frameCount"), frameCount);
 
 	string modelName = screen->ModelName();
 	if (modelVAOs.find(modelName) == modelVAOs.end()) return;
