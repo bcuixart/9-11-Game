@@ -91,6 +91,8 @@ private:
 
 	ALuint planeSound;
 
+	const float CAMERA_DIST = -.05;
+	const float CAMERA_DIST_RUN = -.125;
 	glm::vec3 cameraPosition;
 };
 

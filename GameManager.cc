@@ -13,6 +13,9 @@ GameManager::GameManager(Renderer* _renderer, AudioEngine* _audioEngine, GLFWwin
 
 void GameManager::UpdateCamera() 
 {
+	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
+
 	if (inCutscene) {
 		cutscene_Left_Time -= deltaTime;
 
@@ -23,9 +26,6 @@ void GameManager::UpdateCamera()
 			if (towersTakenDown == 2) PlayAudio("./Assets/Audio/Audio_Victory.ogg", true);
 		}
 
-		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
-
 		glm::vec3 cutscenePos = cutsceneLookAt - CUTSCENE_CAMERA_DISTANCE * forwardVector;
 		cutscenePos.y = 35;
 		camera->MoveCamera(cutscenePos);
@@ -34,8 +34,8 @@ void GameManager::UpdateCamera()
 	}
 	else
 	{
-		camera->MoveCamera(planeGameObject->Position());
-		cameraPosition = planeGameObject->Position();
+		cameraPosition = planeGameObject->Position() + forwardVector * (CAMERA_DIST + (CAMERA_DIST_RUN - CAMERA_DIST) * planeGameObject->PlaneSpeedPercentage());
+		camera->MoveCamera(cameraPosition);
 		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));
 	}
 
