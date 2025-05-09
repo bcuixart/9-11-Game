@@ -11,6 +11,50 @@ GameManager::GameManager(Renderer* _renderer, AudioEngine* _audioEngine, GLFWwin
 	GameManager::instance = this;
 }
 
+void GameManager::UpdateCamera() 
+{
+	if (inCutscene) {
+		cutscene_Left_Time -= deltaTime;
+
+		if (cutscene_Left_Time < 0) {
+			inCutscene = false;
+
+			++towersTakenDown;
+			if (towersTakenDown == 2) PlayAudio("./Assets/Audio/Audio_Victory.ogg", true);
+		}
+
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
+
+		glm::vec3 cutscenePos = cutsceneLookAt - CUTSCENE_CAMERA_DISTANCE * forwardVector;
+		cutscenePos.y = 35;
+		camera->MoveCamera(cutscenePos);
+		cameraPosition = cutscenePos;
+		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(-20, -90, 0));
+	}
+	else
+	{
+		camera->MoveCamera(planeGameObject->Position());
+		cameraPosition = planeGameObject->Position();
+		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));
+	}
+
+	renderer->CameraFogPos(cameraPosition);
+	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
+}
+
+void GameManager::UpdateAudioEngine() 
+{
+	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
+
+	float cameraPos[] = { cameraPosition.x, cameraPosition.y, cameraPosition.z };
+	float cameraForward[] = { forwardVector.x, forwardVector.y, forwardVector.z };
+	audioEngine->Update(cameraPos, cameraForward);
+
+	SetAudioSpeed(planeSound, 1 + planeGameObject->PlaneSpeedPercentage() * 0.25);
+}
+
 int GameManager::GetInput(int key) 
 {
 	return glfwGetKey(window, key);
@@ -105,7 +149,6 @@ void GameManager::Update(float _dT)
 	deltaTime = _dT;
 	++frameCount;
 
-	renderer->CameraViewMatrix(camera->GetCameraViewMatrix(), camera->GetCameraProjectMatrix());
 	renderer->StartFrame();
 	renderer->ClearRenderer();
 
@@ -117,6 +160,9 @@ void GameManager::Update(float _dT)
 		(*it)->Update();
 	}
 
+	UpdateAudioEngine();
+	UpdateCamera();
+
 	for (auto it = currentGameObjects.begin(); it != currentGameObjects.end(); ++it) {
 		renderer->RenderObject(*it);
 	}
@@ -125,44 +171,6 @@ void GameManager::Update(float _dT)
 	for (auto it = currentUIObjects.begin(); it != currentUIObjects.end(); ++it) {
 		renderer->RenderObject(*it);
 	}
-
-	glm::vec3 cameraPosition;
-	if (inCutscene) {
-		cutscene_Left_Time -= deltaTime;
-
-		if (cutscene_Left_Time < 0) {
-			inCutscene = false;
-
-			++towersTakenDown;
-			if (towersTakenDown == 2) PlayAudio("./Assets/Audio/Audio_Victory.ogg", true);
-		}
-
-		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
-
-		glm::vec3 cutscenePos = cutsceneLookAt - CUTSCENE_CAMERA_DISTANCE * forwardVector;
-		cutscenePos.y = 35;
-		camera->MoveCamera(cutscenePos);
-		cameraPosition = cutscenePos;
-		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(-20, -90, 0));
-	}
-	else 
-	{
-		camera->MoveCamera(planeGameObject->Position());
-		cameraPosition = planeGameObject->Position();
-		camera->RotateCamera(planeGameObject->Rotation() + glm::vec3(0, -90, 0));
-	}
-
-	renderer->CameraFogPos(cameraPosition);
-
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(planeGameObject->Rotation().y -90), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::vec3 forwardVector = glm::vec3(rotationMatrix * glm::vec4(1, 0, 0, 1));
-
-	float cameraPos[] = { cameraPosition.x, cameraPosition.y, cameraPosition.z };
-	float cameraForward[] = { forwardVector.x, forwardVector.y, forwardVector.z };
-	audioEngine->Update(cameraPos, cameraForward);
-
-	SetAudioSpeed(planeSound, 1 + planeGameObject->PlaneSpeedPercentage() * 0.25);
 
 	renderer->EndFrame();
 	renderer->ClearRenderer();

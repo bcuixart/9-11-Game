@@ -48,6 +48,9 @@ public:
 	bool inCutscene = false;
 
 private:
+	void UpdateCamera();
+	void UpdateAudioEngine();
+
 	Renderer* renderer;
 	AudioEngine* audioEngine;
 	Camera* camera;
@@ -87,6 +90,8 @@ private:
 	glm::vec3 cutsceneLookAt;
 
 	ALuint planeSound;
+
+	glm::vec3 cameraPosition;
 };
 
 #endif
