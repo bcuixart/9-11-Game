@@ -12,7 +12,12 @@ Renderer::Renderer()
 
 bool Renderer::InitializeRenderer(int width, int height)
 {
-	glGenFramebuffers(1, &framebuffer);
+	return InitializeFramebuffer(width, height);
+}
+
+bool Renderer::InitializeFramebuffer(int width, int height) 
+{
+glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	glGenTextures(1, &framebufferColorTexture);

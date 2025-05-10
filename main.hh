@@ -29,4 +29,6 @@ float deltaTime = 0;
 
 bool showFPS = false;
 
+Renderer* renderer;
+
 #endif

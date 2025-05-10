@@ -25,6 +25,7 @@ public:
 	Renderer();
 
 	bool InitializeRenderer(int width, int height);
+	bool InitializeFramebuffer(int width, int height);
 	void DeleteRenderer();
 
 	void InitializeObjectModelShader(GameObject* gameObject);

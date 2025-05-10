@@ -6,6 +6,7 @@ using namespace chrono;
 void framebufferResizeCallback(GLFWwindow* window, int frameBufferWidth, int frameBufferHeight) 
 {
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+	renderer->InitializeRenderer(frameBufferWidth, frameBufferHeight);
 }
 
 int main(int argc, char* argv[]) 
@@ -51,7 +52,7 @@ int main(int argc, char* argv[])
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	Renderer* renderer = new Renderer();
+	renderer = new Renderer();
 	if (!renderer->InitializeRenderer(WIDTH, HEIGHT)) {
 		cout << "ERROR: Renderer failed to initialize" << endl;
 		glfwTerminate();
